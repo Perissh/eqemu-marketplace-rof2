@@ -332,7 +332,9 @@ def run_remote(a):
     tflag = ["-t"] if (sys.stdin and sys.stdin.isatty()) else []
     # Forward to 127.0.0.1 (not "localhost"): the tool binds IPv4 127.0.0.1, but "localhost"
     # can resolve to IPv6 ::1 on the server, which would refuse the forwarded connection.
-    cmd = ["ssh"] + tflag + ["-L", "%d:127.0.0.1:%d" % (port, port), ssh_target, remote]
+    # Keepalives hold the tunnel open through idle periods and detect a dead link promptly.
+    keepalive = ["-o", "ServerAliveInterval=30", "-o", "ServerAliveCountMax=3"]
+    cmd = ["ssh"] + tflag + keepalive + ["-L", "%d:127.0.0.1:%d" % (port, port), ssh_target, remote]
     print("Connecting to %s over SSH ...  (Ctrl+C to stop)" % ssh_target)
     print("  Browser: %s   (if it can't connect yet, give it a few seconds and refresh)" % url)
     if not a.no_browser:
