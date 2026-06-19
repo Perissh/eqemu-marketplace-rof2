@@ -17,24 +17,38 @@ written SQL.
 It connects to your server database and opens **http://127.0.0.1:8090** in your
 browser.
 
-## Use it on your own server
-This is **not** local-only — it works against any EQEmu database. Two ways to run it,
-both using the credentials from your server's `eqemu_config.json` (the `database` block):
+## Running it on your server
+Run the tool **on the machine that hosts your database** — your EQEmu server box, not a
+separate PC. It connects to MySQL over `localhost`, so no DB credentials cross the network
+and nothing gets exposed. It uses the credentials from your server's `eqemu_config.json`
+(`database` block); the defaults (`127.0.0.1:3306`, user `eqemu`, db `peq`) match a standard
+install, so you can often just double-click `run.bat` (Windows) / `./run.sh` (Linux), or
+pass `--user/--password/--database` to match yours.
 
-**A) On the server box (recommended, simplest).** Copy this folder to the machine your
-server runs on and launch it there. The defaults (`127.0.0.1:3306`, user `eqemu`, db
-`peq`) match a standard EQEmu install, so most operators just double-click `run.bat`
-(Windows) / `./run.sh` (Linux) and it connects. Then browse to it from that same machine,
-or from your PC at `http://<server-ip>:8090` if you start it with `--bind 0.0.0.0`.
+**Seeing the page from your PC** depends on what kind of server you have:
+- **A machine you use directly** — a home PC, or a Windows VPS over Remote Desktop: open
+  the browser right there on that machine (the tool launches it for you). Nothing else to do.
+- **A headless server** — an SSH-only Linux VPS: forward the web port over SSH and view it
+  locally. This is the secure option:
+  ```
+  # on the server:  python catalog_builder.py --no-browser
+  ssh -L 8090:localhost:8090 user@your-server     # then open http://localhost:8090 on your PC
+  ```
 
-**B) From your own PC, pointing at the server's DB.** Pass the connection flags:
-```
-python catalog_builder.py --host db.example.com --user eqemu --password secret --database peq
-```
-> Heads-up: most EQEmu MySQL installs only accept connections from `localhost`, and the
-> DB user is often granted for `localhost` only. If a remote connection is refused, either
-> run it on the server box (option A) or grant remote access on the DB
-> (`CREATE USER 'eqemu'@'%' …; GRANT … ;` and open MySQL's port). Option A avoids all of this.
+> ⚠ **The tool has no login of its own.** Don't expose its web port to an untrusted network.
+> Binding it open with `--bind 0.0.0.0` lets *anyone* who can reach port 8090 edit your
+> catalog — fine on a trusted home/LAN network, not on a public server. For a public box use
+> the SSH tunnel above: it keeps the tool bound to `localhost`, reachable only through your
+> authenticated SSH session.
+
+**Don't want to run it remotely at all?** Build your catalog against any EQEmu DB you can
+reach (your server box, or a local PEQ copy), hit **Export SQL**, and apply the resulting
+`catalog.sql` to your live server however you normally run SQL — or skip the tool entirely
+and write plain `INSERT` rows. The catalog is just one table.
+
+*(Advanced: you can instead point the tool at a remote DB from your PC with `--host`, but
+most EQEmu MySQL installs only accept `localhost` connections and grant the DB user for
+`localhost` only — so running it on the server, as above, is almost always simpler.)*
 
 ## Database connection
 Defaults: `127.0.0.1:3306`, user `eqemu`, db `peq`. Override with flags or env vars:
@@ -71,5 +85,8 @@ python catalog_builder.py --host 127.0.0.1 --user eqemu --password secret --data
 
 ## Safety
 - It only reads the `items` table and reads/writes `boz_marketplace_catalog`.
-- Binds to `127.0.0.1` (local only) by default. Run it on the machine with DB access,
-  or point it at a remote DB with `--host`.
+- **No authentication** — anyone who can reach its web port can edit your catalog. It binds
+  to `127.0.0.1` (local only) by default; keep it that way on a public server and reach it
+  over an SSH tunnel rather than `--bind 0.0.0.0`.
+- Run it on the machine with local DB access (your server box); see *Running it on your
+  server* above.
