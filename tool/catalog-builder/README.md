@@ -28,18 +28,23 @@ pass `--user/--password/--database` to match yours.
 **Seeing the page from your PC** depends on what kind of server you have:
 - **A machine you use directly** — a home PC, or a Windows VPS over Remote Desktop: open
   the browser right there on that machine (the tool launches it for you). Nothing else to do.
-- **A headless server** — an SSH-only Linux VPS: forward the web port over SSH and view it
-  locally. This is the secure option:
+- **A headless server** — an SSH-only Linux VPS: **let the tool do it.** Run it **on your
+  PC** pointed at the server, and it opens a secure SSH tunnel, starts the tool on the
+  server, and opens your browser — no manual tunneling:
   ```
-  # on the server:  python catalog_builder.py --no-browser
-  ssh -L 8090:localhost:8090 user@your-server     # then open http://localhost:8090 on your PC
+  python catalog_builder.py --ssh user@your-server --remote-dir /path/to/tool/on/server
+  # it remembers that — next time just:
+  python catalog_builder.py --connect
   ```
+  Or simply double-click `run.bat` / `./run.sh` on your PC with no local database — it'll
+  notice and offer to connect to your server over SSH, walking you through it once. Needs the
+  OpenSSH client (built into Windows 10/11, macOS, Linux) and SSH access to your server.
 
-> ⚠ **The tool has no login of its own.** Don't expose its web port to an untrusted network.
-> Binding it open with `--bind 0.0.0.0` lets *anyone* who can reach port 8090 edit your
-> catalog — fine on a trusted home/LAN network, not on a public server. For a public box use
-> the SSH tunnel above: it keeps the tool bound to `localhost`, reachable only through your
-> authenticated SSH session.
+> ⚠ **The tool has no login of its own.** The `--ssh` / `--connect` path above is the safe
+> way in: it keeps the tool bound to `localhost` on the server, reachable only through your
+> authenticated SSH session — fine over the public internet. Do **not** instead bind it open
+> (`--bind 0.0.0.0`) on a public server; that lets *anyone* who reaches port 8090 edit your
+> catalog. `--bind 0.0.0.0` is okay only on a trusted home/LAN network.
 
 **Don't want to run it remotely at all?** Build your catalog against any EQEmu DB you can
 reach (your server box, or a local PEQ copy), hit **Export SQL**, and apply the resulting

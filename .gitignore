@@ -8,6 +8,9 @@ __pycache__/
 # Catalog Builder local export (user-generated)
 catalog.sql
 
+# Catalog Builder saved SSH connection (user-specific)
+connect.json
+
 # Editor / OS cruft
 .vscode/
 .idea/

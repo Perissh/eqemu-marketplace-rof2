@@ -21,7 +21,7 @@ DB connection (defaults shown; override with flags or env vars):
 
 Requires: Python 3.8+ and PyMySQL  (pip install pymysql)
 """
-import argparse, json, os, sys, threading, webbrowser
+import argparse, json, os, subprocess, sys, threading, webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -32,6 +32,7 @@ except ImportError:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CATALOG_TABLE = "boz_marketplace_catalog"
+CONNECT_CFG = os.path.join(HERE, "connect.json")   # saved SSH target for --connect
 
 CFG = {}  # filled by main()
 
@@ -277,6 +278,55 @@ class H(BaseHTTPRequestHandler):
             return self._send(500, {"error": str(e)})
 
 
+# ---------------------------------------------------------------------------
+# Remote mode: run the tool ON your server (where the DB is) and use it from your
+# PC. We open an SSH tunnel to the server, start the tool there, and point your
+# browser at the tunnel -- so the database is only ever reached locally on the
+# server and nothing is exposed to the network. The SSH target + remote path are
+# saved (connect.json) so next time it's a one-liner: `--connect`.
+# ---------------------------------------------------------------------------
+def run_remote(a):
+    cfg = {}
+    if os.path.exists(CONNECT_CFG):
+        try:
+            with open(CONNECT_CFG) as f:
+                cfg = json.load(f)
+        except Exception:
+            cfg = {}
+    ssh_target = a.ssh or cfg.get("ssh") or ""
+    remote_dir = a.remote_dir or cfg.get("remote_dir") or ""
+    if not ssh_target:
+        ssh_target = input("  Your server SSH login (user@host): ").strip()
+    if not remote_dir:
+        remote_dir = input("  Path to this tool's folder ON the server: ").strip()
+    if not ssh_target or not remote_dir:
+        sys.exit("Need both an SSH login (user@host) and the remote tool path.")
+    try:
+        with open(CONNECT_CFG, "w") as f:
+            json.dump({"ssh": ssh_target, "remote_dir": remote_dir}, f)
+    except Exception:
+        pass
+
+    port = a.webport
+    url = "http://localhost:%d" % port
+    # Start the tool on the server via run.sh (auto-installs PyMySQL); fall back to a
+    # bare python3 call. It binds to the server's localhost, which the -L tunnel reaches.
+    remote = ("cd '%s' && (bash run.sh --no-browser --webport %d || "
+              "python3 catalog_builder.py --no-browser --webport %d)" % (remote_dir, port, port))
+    cmd = ["ssh", "-t", "-L", "%d:localhost:%d" % (port, port), ssh_target, remote]
+    print("Connecting to %s over SSH ...  (Ctrl+C to stop)" % ssh_target)
+    print("  Browser: %s   (if it can't connect yet, give it a few seconds and refresh)" % url)
+    if not a.no_browser:
+        threading.Timer(5.0, lambda: webbrowser.open(url)).start()
+    try:
+        subprocess.call(cmd)
+    except KeyboardInterrupt:
+        pass
+    except FileNotFoundError:
+        sys.exit("Couldn't find 'ssh'. Install OpenSSH (Windows 10/11 includes it) and retry.")
+    print("Tunnel closed.")
+
+
 def main():
     ap = argparse.ArgumentParser(description="EQ Marketplace Catalog Builder")
     ap.add_argument("--host", default=os.environ.get("MKT_DB_HOST", "127.0.0.1"))
@@ -287,14 +337,32 @@ def main():
     ap.add_argument("--bind", default="127.0.0.1")
     ap.add_argument("--webport", type=int, default=8090)
     ap.add_argument("--no-browser", action="store_true")
+    ap.add_argument("--ssh", metavar="USER@HOST",
+                    help="Use against a REMOTE server over an SSH tunnel (run this on your PC; saved for next time).")
+    ap.add_argument("--remote-dir", metavar="PATH",
+                    help="Path to this tool's folder on the server (used with --ssh).")
+    ap.add_argument("--connect", action="store_true",
+                    help="Reconnect to the server saved from a previous --ssh.")
     a = ap.parse_args()
+
+    # Remote mode: tunnel to the server and run the tool there (see run_remote).
+    if a.ssh or a.connect:
+        return run_remote(a)
+
     CFG.update(host=a.host, port=a.port, user=a.user, password=a.password, database=a.database)
 
     try:
         q("SELECT 1")
     except Exception as e:
+        # No database reachable here. If we're interactive, offer to connect to a
+        # remote server over SSH instead of just failing -- the common "my server is
+        # on another box" case becomes plug-and-play.
+        if sys.stdin and sys.stdin.isatty():
+            print("Could not reach a database at %s:%d  (%s)" % (a.host, a.port, e))
+            if input("Is your EQEmu server on another machine -- connect over SSH? [y/N]: ").strip().lower().startswith("y"):
+                return run_remote(a)
         sys.exit("Could not connect to the database (%s@%s:%d/%s): %s\n"
-                 "Pass --user/--password/--database/--host to match your server."
+                 "Match your server with --user/--password/--database/--host, or use --ssh user@host for a remote server."
                  % (a.user, a.host, a.port, a.database, e))
     ensure_table()
 
@@ -302,6 +370,8 @@ def main():
     print("EQ Marketplace Catalog Builder")
     print("  DB:  %s@%s:%d/%s" % (a.user, a.host, a.port, a.database))
     print("  Web: %s   (Ctrl+C to stop)" % url)
+    if a.bind in ("127.0.0.1", "localhost"):
+        print("  (Using it from another computer? Run this on that PC with  --ssh user@this-server  -- see README.)")
     if not a.no_browser:
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
     ThreadingHTTPServer((a.bind, a.webport), H).serve_forever()
