@@ -1,0 +1,186 @@
+{
+  "summary": "Dependency closure for carving the Marketplace out of C:/BOZ-Client-RoF2/src/dllmain_rof2.cpp into a standalone ASI.\n\nMARKETPLACE UNITS (the carve-out, self-contained code that moves wholesale):\n  - namespace MktOff (2298-2345) and all the Mkt* typedefs (2347-2361).\n  - All Mkt* functions/globals/structs: MktRenameCategory, MktMakeNode, MktAddBranch, MktAddGearBranch, MktPopulate, MktReadable/MktExecutable/MktTileLooksValid/MktSafeSetVisible/MktSafeHide/MktSafeRelayout/MktHideAllTiles, MktFindChild, MktSetChildText, MktSetWidgetText, MktHideChild, struct MktItem + g_mktItems[]/g_mktItemCount/g_mktCollecting/g_mktView/g_mktViewN/g_mktPlayerLevel/g_mktSouls/g_mktConquest/g_mktRaid/g_mktFundsValid and all other g_mkt* globals, MktStrip, MktLookupCategory, MktItemIconAnim, MktFillOneTile, MktTickTiles, MktGridIndexOf, TickMarketplace (2972-3121), ParseBozMkt (3160-3185), the MktPaperDoll/preview typedefs + MktRenderCloneBareRebuild/MktRenderClone/MktMaybeHint/MktShowPreview (4756-4964), MyHook_MktWndNotification + InstallMktVTableHook + g_origMktWndNotif/g_mktVtableCopy/MktWndNotifyFn (4966-5066).\n  - Marketplace BRANCHES of three shared hooks (these hooks must be FORKED, keeping only the mkt branch in the standalone): MyHook_PwDraw's `TickMarketplace();` call (2047); MyHook_DspChat's [BOZ_MKT_START]/[BOZ_MKT_LEVEL]/[BOZ_MKT_END]/[BOZ_MKT]/[BOZ_FUNDS] branches (3810-3843); the whole MyHook_MktWndNotification (already mkt-only).\n\nCLOSURE RESULT: union of {mkt units} + {copy_constant Off:: entries} + {copy_helper functions} + {forked hook mkt-branches} is closed. The only cross-unit code dependency is ArmorOrn::PreviewApply (called by MktRenderClone*) \u2014 disposition fork_hook/write_fresh: the standalone needs a private armor-slot-repaint primitive (the ArmorOrn FUN_00594E50 hook + g_orig) OR must fork that hook too. CopyField is a shared parser used by both ParseBozNode and ParseBozMkt \u2192 copy_helper. SendServerCommand is shared (mkt + node-fight + anti-cheat) \u2192 copy_helper. g_orig_DspChat/g_dspChatThis (read by MktMaybeHint) come with the forked dsp_chat hook.",
+  "forked_hooks": [
+    "MyHook_PwDraw (per-frame CPlayerWnd::Draw hook, FUN_00718CF0) \u2014 shared with melee-mana re-show + Node-Fight TickCycleHeader + anti-cheat AcFlushPendingFromMainThread; standalone keeps ONLY the `TickMarketplace();` call (line 2047) plus its own install (InstallHook_PwDraw, the FnPwDraw_t typedef, g_orig_PwDraw, g_hookPwDraw_installed). Drop TickCycleHeader/AcFlush/melee-mana from the fork.",
+    "MyHook_DspChat (CEverQuest::dsp_chat hook, FUN_0051F1A0) \u2014 shared tag dispatcher; standalone keeps ONLY the marketplace branches [BOZ_MKT_START]/[BOZ_MKT_LEVEL]/[BOZ_MKT_END]/[BOZ_MKT] (\u2192ParseBozMkt)/[BOZ_FUNDS] (lines 3810-3843), plus its install (InstallHook_DspChat), FnDspChat_t typedef, g_orig_DspChat, g_hookDspChatInstalled, g_dspChatThis (the latter two read by MktMaybeHint). Drop all BOZ_SPELL_UNLOCK/ARMORORN/MAXMANA/SKILL_*/NODE*/CYCLE/SOUL_BANK/SLOT* branches.",
+    "MyHook_MktWndNotification / InstallMktVTableHook (per-instance vtable[34] swap on CMarketplaceWnd) \u2014 already 100% marketplace; it is a 'forked hook' only in the sense that it is one of the three hook units and must travel intact with g_origMktWndNotif/g_mktVtableCopy/MktWndNotifyFn.",
+    "ArmorOrn FUN_00594E50 apply+repaint hook (namespace ArmorOrn, install at ~6151) \u2014 NOT a marketplace unit, but MktRenderClone*/preview call ArmorOrn::PreviewApply through ArmorOrn::g_orig. The standalone must FORK this: bring over just PreviewApply + the g_orig trampoline (Off::FnArmorApply install) so the full-suit/robe preview repaint resolves; the worn-item-walk hook body (MyHook, RefreshWornSlot, worn/render slot maps) is NOT needed by marketplace and can be dropped."
+  ],
+  "dependencies": [
+    {
+      "symbol": "Off::FnCreatePlayerActor",
+      "defined_at": "line 462",
+      "used_by": "MktRenderCloneBareRebuild (4799)",
+      "disposition": "copy_constant",
+      "note": "0x0048F4B0 RVA. CDisplay::CreatePlayerActor \u2014 rebuilds the live actor bare then restores it around the paper-doll clone."
+    },
+    {
+      "symbol": "Off::FnDisplayActorCleanup",
+      "defined_at": "line 493",
+      "used_by": "MktRenderCloneBareRebuild (4800)",
+      "disposition": "copy_constant",
+      "note": "0x00490A10 RVA. FUN_00490a10 anti-ghost reap of the replaced old actor after each CreatePlayerActor rebuild."
+    },
+    {
+      "symbol": "Off::GblCDisplay",
+      "defined_at": "line 487",
+      "used_by": "MktRenderCloneBareRebuild (4798)",
+      "disposition": "copy_constant",
+      "note": "0x00DD2660 RVA. CDisplay singleton ptr (this for CreatePlayerActor)."
+    },
+    {
+      "symbol": "Off::GblPreviewSubject",
+      "defined_at": "line 486",
+      "used_by": "MktShowPreview (4951)",
+      "disposition": "copy_constant",
+      "note": "0x00DD2630 RVA. Local-player spawn ptr = the preview subject cloned by the paper-doll. NOTE: also referenced by ArmorOrn \u2014 copy the constant; ArmorOrn fork shares it."
+    },
+    {
+      "symbol": "Off::FnPaperDollPreview",
+      "defined_at": "line 507",
+      "used_by": "MktShowPreview (4954)",
+      "disposition": "copy_constant",
+      "note": "0x00576CA0 RVA. FUN_00576ca0 native paper-doll: clones GblPreviewSubject into the viewport on a fresh actor."
+    },
+    {
+      "symbol": "Off::ChatMgrPtr",
+      "defined_at": "line 343",
+      "used_by": "SendServerCommand (4241) \u2014 called by TickMarketplace(#mkt) and MyHook_MktWndNotification(#mktbuy/#mktview)",
+      "disposition": "copy_constant",
+      "note": "0x00E67CCC RVA. CChatManager singleton. Travels with the SendServerCommand copy_helper."
+    },
+    {
+      "symbol": "Off::FnChatSend",
+      "defined_at": "line 340",
+      "used_by": "SendServerCommand (4251)",
+      "disposition": "copy_constant",
+      "note": "0x005369E0 RVA. CChatManager::SendChatMessage \u2014 wire path for the #mkt* commands. Travels with SendServerCommand."
+    },
+    {
+      "symbol": "Off::FnPlayerWndDraw",
+      "defined_at": "line 327",
+      "used_by": "InstallHook_PwDraw (2059) \u2014 needed only because the per-frame hook is forked to carry TickMarketplace",
+      "disposition": "copy_constant",
+      "note": "0x00718CF0 RVA. CPlayerWnd::Draw vtable[3]; the standalone's forked PwDraw hook installs here."
+    },
+    {
+      "symbol": "Off::FnDspChat",
+      "defined_at": "line 290",
+      "used_by": "InstallHook_DspChat (3911); g_orig_DspChat is the original called from MktMaybeHint",
+      "disposition": "copy_constant",
+      "note": "0x0051F1A0 RVA. CEverQuest::dsp_chat. Forked dsp_chat hook installs here AND MktMaybeHint prints the robe hint via the saved g_orig_DspChat trampoline."
+    },
+    {
+      "symbol": "Off::FnArmorApply",
+      "defined_at": "line 523",
+      "used_by": "ArmorOrn::Install / ArmorOrn::PreviewApply via g_orig (6147), which MktRenderClone* calls",
+      "disposition": "copy_constant",
+      "note": "0x00594E50 RVA. The per-slot armor apply+repaint primitive. Needed so the forked ArmorOrn::PreviewApply primitive resolves for the full-suit/robe preview repaint."
+    },
+    {
+      "symbol": "MktOff:: (entire namespace + Mkt* typedefs)",
+      "defined_at": "lines 2298-2361",
+      "used_by": "every Mkt* function",
+      "disposition": "copy_constant",
+      "note": "Self-contained set of marketplace offsets/struct-field constants (pWnd, CreateCats/RenderCats, NodeAlloc/NodeCtor/CXStrCtor, MakeTile/TplResolve/FindChild, SetIcon/AnimFind/AnimCtor/AnimCopy, UiMgr=0x015D3D08, Grid/SelNode/TreeCtrl + field offsets, LeafVtable/BranchVtable, VtSetText/VtSetVis/VtLayout, TileTplId, NameColor). Part of the marketplace unit \u2014 moves wholesale, no external split. (UiMgr duplicates Off::SidlMgrPtr 0x015D3D08 so the mkt code never needs Off:: for the UI mgr.)"
+    },
+    {
+      "symbol": "Resolve / ResolveBase / g_baseAddr",
+      "defined_at": "lines 564-575",
+      "used_by": "every Mkt* fn, SendServerCommand, the forked hooks (RVA->runtime rebase)",
+      "disposition": "copy_helper",
+      "note": "The RVA->runtime address helper (g_baseAddr + off). Trivial; copy verbatim. ResolveBase()/g_baseAddr must be initialized in the standalone's DllMain/init before any Resolve call."
+    },
+    {
+      "symbol": "Log:: (namespace Log + Write + PATH)",
+      "defined_at": "lines 528-541",
+      "used_by": "SendServerCommand, InstallMktVTableHook, the forked hook installers + dsp_chat mkt branch logging",
+      "disposition": "copy_helper",
+      "note": "Tiny fopen/vfprintf logger. Copy verbatim (maybe repoint PATH to a standalone log)."
+    },
+    {
+      "symbol": "IsReadable",
+      "defined_at": "lines 578-586",
+      "used_by": "SendServerCommand (4242), the forked hook installers (prologue checks)",
+      "disposition": "copy_helper",
+      "note": "VirtualQuery commit/protect/extent guard. Copy verbatim. (Note the mkt tile code uses its OWN MktReadable/MktExecutable, already inside the marketplace unit \u2014 IsReadable is only needed by SendServerCommand + the forked installers.)"
+    },
+    {
+      "symbol": "SendServerCommand + FnChatSend_t typedef",
+      "defined_at": "4237-4264 (typedef 4237, fn 4239)",
+      "used_by": "TickMarketplace (3012 #mkt), MyHook_MktWndNotification (4986 #mktbuy / 4999 #mktview)",
+      "disposition": "copy_helper",
+      "note": "Shared with Node-Fight + anti-cheat in the monolith. For the standalone, copy this one function + its typedef; it pulls in copy_constants ChatMgrPtr + FnChatSend, and helpers Resolve/IsReadable/Log. Self-contained once those travel."
+    },
+    {
+      "symbol": "CopyField",
+      "defined_at": "lines 3125-3134",
+      "used_by": "ParseBozMkt (3165+), and the [BOZ_FUNDS] branch of the forked dsp_chat hook (3835-3837)",
+      "disposition": "copy_helper",
+      "note": "Pipe-delimited field copier. Shared with ParseBozNode in the monolith; copy verbatim into the standalone."
+    },
+    {
+      "symbol": "ArmorOrn::PreviewApply + ArmorOrn::g_orig (and ArmorOrn::Install + Off::FnArmorApply trampoline)",
+      "defined_at": "decl 3676; def 6144-6149; g_orig + Install ~5996-6193",
+      "used_by": "MktRenderCloneBareRebuild (4808,4838) and MktRenderClone via the bare-rebuild paths",
+      "disposition": "fork_hook",
+      "note": "Marketplace's ONLY cross-unit CODE call. Fork the ArmorOrn hook: bring PreviewApply + the g_orig FUN_00594E50 trampoline (Install + FnArmorApply_t typedef + g_installed/g_orig globals). The standalone does NOT need ArmorOrn's worn-item-walk MyHook body, RefreshWornSlot, or the worn/render slot maps. Alternatively write_fresh a private 9-arg apply wrapper that resolves FnArmorApply and calls it directly (no hook needed since PreviewApply uses g_orig=the un-hooked entry anyway)."
+    },
+    {
+      "symbol": "g_orig_DspChat / g_dspChatThis",
+      "defined_at": "3591 / 3600",
+      "used_by": "MktMaybeHint (4929,4933) prints the one-time robe preview hint",
+      "disposition": "fork_hook",
+      "note": "Owned by the dsp_chat hook unit; they travel with the forked dsp_chat hook. MktMaybeHint reads g_orig_DspChat (the saved trampoline) + g_dspChatThis to paint the [Marketplace] hint line. No separate copy needed if the dsp_chat hook is forked."
+    },
+    {
+      "symbol": "FnCreateActor_t typedef",
+      "defined_at": "line 1800-1802",
+      "used_by": "MktRenderCloneBareRebuild (4799 reinterpret_cast)",
+      "disposition": "copy_helper",
+      "note": "Pure typedef for CreatePlayerActor's __thiscall signature. The monolith defines it once for the gravestone CreateActor hook; the standalone needs just the typedef (copy it; do NOT pull in MyHook_CreateActor / g_orig_CreateActor \u2014 unrelated)."
+    },
+    {
+      "symbol": "FnPwDraw_t typedef + g_orig_PwDraw + g_hookPwDraw_installed + InstallHook_PwDraw",
+      "defined_at": "2010-2012, 2057-2106",
+      "used_by": "the forked per-frame hook that carries TickMarketplace",
+      "disposition": "fork_hook",
+      "note": "Part of forking MyHook_PwDraw. Copy the typedef/globals/installer; strip the non-mkt calls (TickCycleHeader, AcFlushPendingFromMainThread, melee-mana re-show) from the forked MyHook_PwDraw body so the standalone keeps only TickMarketplace()."
+    },
+    {
+      "symbol": "FnDspChat_t typedef + g_hookDspChatInstalled + InstallHook_DspChat",
+      "defined_at": "3590, 3592, 3909-3964",
+      "used_by": "the forked dsp_chat hook carrying the [BOZ_MKT*]/[BOZ_FUNDS] branches",
+      "disposition": "fork_hook",
+      "note": "Part of forking MyHook_DspChat. Copy typedef/globals/installer; the forked MyHook_DspChat body keeps ONLY the marketplace string branches + a tail call to g_orig_DspChat."
+    },
+    {
+      "symbol": "windows.h / psapi.h APIs (VirtualAlloc, VirtualProtect, VirtualFree, VirtualQuery, MEMORY_BASIC_INFORMATION, FlushInstructionCache, GetCurrentProcess, GetModuleHandleA, GetLastError, HeapAlloc/HeapFree/GetProcessHeap, GetTickCount, CreateThread, GetProcAddress)",
+      "defined_at": "external",
+      "used_by": "InstallMktVTableHook (HeapAlloc/HeapFree/GetProcessHeap), the forked hook installers (VirtualAlloc/Protect/Flush), memory guards (VirtualQuery)",
+      "disposition": "external_winapi_crt",
+      "note": "Standard Win32. Just #include <windows.h>; no copy."
+    },
+    {
+      "symbol": "SEH __try/__except/__finally + EXCEPTION_EXECUTE_HANDLER",
+      "defined_at": "external (MSVC intrinsic)",
+      "used_by": "MktFillOneTile, MktTickTiles, TickMarketplace, MktRenderClone*, MktShowPreview, InstallMktVTableHook, SetListRowColor pattern",
+      "disposition": "external_winapi_crt",
+      "note": "MSVC structured exception handling. Compiler-provided; POD-only locals already enforced in those scopes."
+    },
+    {
+      "symbol": "CRT string/mem fns (lstrcmpA, lstrcpynA, _snprintf, strncmp, strchr, strtoul, atoi, strcpy, strlen, memcpy, memset)",
+      "defined_at": "external",
+      "used_by": "ParseBozMkt, MktLookupCategory, MktAddGearBranch, MktTickTiles, MktFillOneTile, TickMarketplace, MyHook_MktWndNotification, the [BOZ_FUNDS] dsp_chat branch",
+      "disposition": "external_winapi_crt",
+      "note": "lstrcmpA/lstrcpynA are kernel32; the rest are CRT (<cstring>/<cstdlib>/<cstdio>). #include the headers; no copy."
+    },
+    {
+      "symbol": "DWORD/BYTE/uint8_t/uint16_t types + reinterpret_cast idiom",
+      "defined_at": "external (windows.h + <cstdint>)",
+      "used_by": "all mkt code",
+      "disposition": "external_winapi_crt",
+      "note": "Win32 typedefs + stdint. Headers only."
+    }
+  ]
+}

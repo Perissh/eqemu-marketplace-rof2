@@ -1,0 +1,881 @@
+{
+  "categories": [
+    {
+      "category": "MktOff \u2014 window globals & vtable hook",
+      "note": "All from MktOff namespace (lines 2298-2345) plus the WndNotification hook (InstallMktVTableHook line 5039, MyHook_MktWndNotification line 4975). Window class = CMarketplaceWnd; vtable 0x009efaf8; ctor FUN_006ddb90. WndNotification = vtable slot 34.",
+      "items": [
+        {
+          "symbol": "MktOff::pWnd",
+          "value": "0x00D1FD08",
+          "kind": "global_ptr",
+          "description": "Global holding &CMarketplaceWnd* (the active marketplace window instance). Read in TickMarketplace; null/visByte!=1 => closed.",
+          "anchor": "DAT_00D1FD08; *(pWnd) -> CMarketplaceWnd*; same as preview-window global in recon"
+        },
+        {
+          "symbol": "MktOff::Visible",
+          "value": "0x196",
+          "kind": "struct_offset",
+          "description": "CXWnd visible byte on the marketplace window (==1 when open).",
+          "anchor": "*(BYTE*)(window+0x196)==1 open-gate in TickMarketplace"
+        },
+        {
+          "symbol": "MktWnd vtable slot 34 (WndNotification)",
+          "value": "34 (vtbl+0x88)",
+          "kind": "vtable_slot",
+          "description": "CMarketplaceWnd::WndNotification slot swapped per-instance to MyHook_MktWndNotification; orig at vtbl[34].",
+          "anchor": "origVtable[34]; native target ~0x6e1f70; kVtableSlots=256 copied"
+        },
+        {
+          "symbol": "MktNotify code 0x20 (tile select)",
+          "value": "0x20",
+          "kind": "misc",
+          "description": "WndNotification code for a grid tile (or sub-widget) being selected; drives selection + preview.",
+          "anchor": "code==0x20 in MyHook_MktWndNotification"
+        },
+        {
+          "symbol": "MktNotify code 0x1 (button activated)",
+          "value": "0x1",
+          "kind": "misc",
+          "description": "WndNotification code for Buy/Inspect button click activation.",
+          "anchor": "code==0x1; MKPW_BuyBtn / MKPW_DetailsInspect"
+        },
+        {
+          "symbol": "Notify sub-widget parent walk",
+          "value": "+0xc then -0x10",
+          "kind": "struct_offset",
+          "description": "When notify child is a sub-widget of a tile: parent = *(notify+0xc) - 0x10 to reach the tile container.",
+          "anchor": "DWORD parent = *(notify+0xc) - 0x10 in MyHook_MktWndNotification"
+        }
+      ]
+    },
+    {
+      "category": "MktOff \u2014 category tree (ArrayClass + node ctor)",
+      "note": "Category-array on the window + the node builder. CreateCats/RenderCats are the native populate/render fns.",
+      "items": [
+        {
+          "symbol": "MktOff::CreateCats",
+          "value": "0x006DD260",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_006dd260(wnd): native fn that builds the 3 stock category nodes (New & Featured / Player Studio / All Items). __fastcall(ecx=wnd).",
+          "anchor": "FnMktVoidWnd_t; called at top of MktPopulate"
+        },
+        {
+          "symbol": "MktOff::RenderCats",
+          "value": "0x006DCF40",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_006dcf40(wnd): native fn that renders category nodes; only renders nodes with +0x30 (NodeCount) > 0. __fastcall(ecx=wnd).",
+          "anchor": "FnMktVoidWnd_t; called at end of MktPopulate; render gate = NodeCount"
+        },
+        {
+          "symbol": "MktOff::CatCount",
+          "value": "0x280",
+          "kind": "struct_offset",
+          "description": "Category ArrayClass element count (struct start) on the marketplace window.",
+          "anchor": "window+0x280; *(window+CatCount) in MktAddBranch/MktPopulate"
+        },
+        {
+          "symbol": "MktOff::CatArray",
+          "value": "0x284",
+          "kind": "struct_offset",
+          "description": "Category ArrayClass data pointer (array of node ptrs) on the window.",
+          "anchor": "window+0x284; arr=*(window+0x284)"
+        },
+        {
+          "symbol": "MktOff::CatCapacity",
+          "value": "0x288",
+          "kind": "struct_offset",
+          "description": "Category ArrayClass capacity (allocated slots). Code grows it to 24 via NodeAlloc.",
+          "anchor": "window+0x288; <24 triggers realloc in MktPopulate"
+        },
+        {
+          "symbol": "MktOff::NodeAlloc",
+          "value": "0x008DBB3B",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_008dbb3b(size) -> operator new; used to alloc category nodes (0x34), the bigger 24-slot cat array, and the 0x4c CTextureAnimation copy.",
+          "anchor": "FnMktAlloc_t (__cdecl); NodeAlloc(0x34)"
+        },
+        {
+          "symbol": "MktOff::NodeCtor",
+          "value": "0x006E4A70",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_006e4a70(node,type,&dispCX,&intCX,parent,visible): category-node ctor; auto-links child into parent's child-array. __thiscall via __fastcall.",
+          "anchor": "FnMktNodeCtor_t; type 0=folder,1=browse view; MktMakeNode"
+        },
+        {
+          "symbol": "MktOff::NodeIntName",
+          "value": "0x10",
+          "kind": "struct_offset",
+          "description": "catNode -> internal-name CXStr* (the shown name). Used by MktRenameCategory.",
+          "anchor": "node+0x10; *(node+NodeIntName)=CXStr"
+        },
+        {
+          "symbol": "MktOff::NodeVisible",
+          "value": "0x18",
+          "kind": "struct_offset",
+          "description": "Category node visible byte (set 1 by ctor arg).",
+          "anchor": "node+0x18"
+        },
+        {
+          "symbol": "MktOff::NodeParent",
+          "value": "0x1c",
+          "kind": "struct_offset",
+          "description": "Category node parent pointer (0 = top-level).",
+          "anchor": "node+0x1c"
+        },
+        {
+          "symbol": "MktOff::NodeChildCnt",
+          "value": "0x20",
+          "kind": "struct_offset",
+          "description": "Category node child-array count (0 = leaf).",
+          "anchor": "node+0x20"
+        },
+        {
+          "symbol": "MktOff::NodeCount",
+          "value": "0x30",
+          "kind": "struct_offset",
+          "description": "Category node item-count / render gate: RenderCats only renders when >0. Code sets =1 to show, =0 to hide a default.",
+          "anchor": "node+0x30; render gate in FUN_006dcf40"
+        },
+        {
+          "symbol": "MktOff::SelNode",
+          "value": "0x25c",
+          "kind": "struct_offset",
+          "description": "*(window+0x25c) = selected category node (unreliable for custom nodes -> code reads the tree control instead).",
+          "anchor": "window+0x25c"
+        },
+        {
+          "symbol": "MktAddBranch cat-array cap guard",
+          "value": "24",
+          "kind": "misc",
+          "description": "Hard cap: MktAddBranch refuses to append when CatCount>=24; MktPopulate pre-grows to 24 slots.",
+          "anchor": "cnt>=24 return; 24-slot buffer"
+        }
+      ]
+    },
+    {
+      "category": "MktOff \u2014 CXStr primitives",
+      "note": "CXStr ctor + inline-text/length offsets used for in-place renaming and child-text setting.",
+      "items": [
+        {
+          "symbol": "MktOff::CXStrCtor",
+          "value": "0x00805C20",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_00805c20(&out, cstr): constructs a CXStr (single rep ptr) from a C string. SAME address as Off::FnCxstrCtor.",
+          "anchor": "FnMktCXStr_t; used everywhere a &CXStr arg is needed"
+        },
+        {
+          "symbol": "MktOff::CXStrLen",
+          "value": "0x08",
+          "kind": "struct_offset",
+          "description": "CXStr length field (written by MktRenameCategory after editing inline text).",
+          "anchor": "cx+0x08"
+        },
+        {
+          "symbol": "MktOff::CXStrText",
+          "value": "0x14",
+          "kind": "struct_offset",
+          "description": "CXStr inline text buffer (chars). Code writes the new category name here in place.",
+          "anchor": "cx+0x14; rep+0x14 chars (matches CXStr probe-safety note)"
+        }
+      ]
+    },
+    {
+      "category": "MktOff \u2014 item grid / tile factory",
+      "note": "Tile creation + child-find + icon/text plumbing. Item-tile SIDL template id is build-specific.",
+      "items": [
+        {
+          "symbol": "MktOff::Grid",
+          "value": "0x384",
+          "kind": "struct_offset",
+          "description": "*(window+0x384) = the item grid (CTileLayoutWnd) the tiles are made into.",
+          "anchor": "window+0x384; grid=*(window+Grid)"
+        },
+        {
+          "symbol": "MktOff::UiMgr",
+          "value": "0x015D3D08",
+          "kind": "global_ptr",
+          "description": "*(0x015D3D08) = CSidlManager* (UI/SIDL manager). Used for TplResolve/MakeTile/AnimFind. SAME as Off::SidlMgrPtr.",
+          "anchor": "DAT_015d3d08; uiMgr=*(UiMgr)"
+        },
+        {
+          "symbol": "MktOff::MakeTile",
+          "value": "0x0086E5E0",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_0086e5e0(uiMgr, grid, tmpl): instantiate one item tile into the grid from a resolved template. Yields one tile per draw frame. __fastcall(ecx=uiMgr).",
+          "anchor": "FnMktMakeTile_t; phase-1 tile pump"
+        },
+        {
+          "symbol": "MktOff::TplResolve",
+          "value": "0x00870040",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_00870040(uiMgr, id): resolve a SIDL template by numeric id -> template ptr (fed to MakeTile). __fastcall(ecx=uiMgr).",
+          "anchor": "FnMktTpl_t; TplResolve(uiMgr, TileTplId)"
+        },
+        {
+          "symbol": "MktOff::TileTplId",
+          "value": "3211409 (0x30F0D1)",
+          "kind": "sidl_template_id",
+          "description": "SIDL template id of the item-tile template. BUILD-SPECIFIC SIDL id (re-derive per skin/build).",
+          "anchor": "MktOff::TileTplId=3211409; passed to TplResolve"
+        },
+        {
+          "symbol": "MktOff::FindChild",
+          "value": "0x00868330",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_00868330(parent, &cxstr): find a named child control inside a window/tile. __fastcall(ecx=parent).",
+          "anchor": "FnMktFind_t; MktFindChild(tile,name)"
+        },
+        {
+          "symbol": "MktOff::SetIcon",
+          "value": "0x006D1C80",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_006d1c80(iconCtrl, icon): set the icon control's frame; internally subtracts 500 (frame = icon-500 within A_DragItem). __cdecl.",
+          "anchor": "FnMktSetIcon_t; pass it->icon -> A_DragItem frame"
+        },
+        {
+          "symbol": "MktOff::IconAnim",
+          "value": "0x228",
+          "kind": "struct_offset",
+          "description": "icon control -> CTextureAnimation* (the rendered atlas). Code points each tile's icon ctrl at its OWN copy.",
+          "anchor": "iconCtrl+0x228 = per-tile anim copy"
+        },
+        {
+          "symbol": "MktOff::AnimFind",
+          "value": "0x0086E010",
+          "kind": "abs_eqgame_addr",
+          "description": "FindAnimation(uiMgr, &CXStr 'A_DragItem') -> CTextureAnimation*. __fastcall(ecx=uiMgr).",
+          "anchor": "FnMktAnimFind_t; src atlas for per-tile copy"
+        },
+        {
+          "symbol": "MktOff::AnimCtor",
+          "value": "0x0087A9A0",
+          "kind": "abs_eqgame_addr",
+          "description": "CTextureAnimation ctor, run on a 0x4c-byte alloc. __fastcall(ecx=obj).",
+          "anchor": "FnMktAnimCtor_t; obj=NodeAlloc(0x4c)"
+        },
+        {
+          "symbol": "MktOff::AnimCopy",
+          "value": "0x0041F2D0",
+          "kind": "abs_eqgame_addr",
+          "description": "CTextureAnimation copy-init(dest, src). __fastcall(ecx=dest). Models the client's own FUN_006f4d20 pattern.",
+          "anchor": "FnMktAnimCopy_t; per-tile icon copy"
+        },
+        {
+          "symbol": "CTextureAnimation alloc size",
+          "value": "0x4c",
+          "kind": "misc",
+          "description": "Byte size of a CTextureAnimation object (NodeAlloc(0x4c) before AnimCtor/AnimCopy).",
+          "anchor": "NodeAlloc(0x4c) in MktItemIconAnim"
+        },
+        {
+          "symbol": "Category-node alloc size",
+          "value": "0x34",
+          "kind": "misc",
+          "description": "Byte size of a category tree node (NodeAlloc(0x34) before NodeCtor).",
+          "anchor": "NodeAlloc(0x34) in MktMakeNode"
+        },
+        {
+          "symbol": "CXWnd child-list head",
+          "value": "+0x10",
+          "kind": "struct_offset",
+          "description": "Grid/tile child-list HEAD pointer (first child). Walked to enumerate tiles. Also tile+0x10 = name label (first child).",
+          "anchor": "grid+0x10; tile+0x10 used as name label in selection highlight"
+        },
+        {
+          "symbol": "CXWnd child-list next",
+          "value": "+0x08",
+          "kind": "struct_offset",
+          "description": "CXWnd sibling 'next' link in the child list (grid tile enumeration).",
+          "anchor": "ch=*(ch+0x08) loop in MktHideAllTiles/MktTickTiles/MktGridIndexOf"
+        }
+      ]
+    },
+    {
+      "category": "MktOff \u2014 CXWnd vtable slots & text color",
+      "note": "Vtable slot byte-offsets used to call SetWindowText / SetVisible / relayout, plus the name-label text-color field.",
+      "items": [
+        {
+          "symbol": "MktOff::VtSetText",
+          "value": "0x124",
+          "kind": "vtable_slot",
+          "description": "CXWnd vtable byte-offset for SetWindowText(&CXStr). Called as *(*(child)+0x124).",
+          "anchor": "vt+0x124; MktSetChildText/MktSetWidgetText"
+        },
+        {
+          "symbol": "MktOff::VtSetVis",
+          "value": "0xd8",
+          "kind": "vtable_slot",
+          "description": "CXWnd vtable byte-offset for SetVisible(show, resize). =slot 54. Used to show/hide tiles + validated in MktTileLooksValid.",
+          "anchor": "vt+0xd8; FnMktVFlags_t(wnd,show,1)"
+        },
+        {
+          "symbol": "MktOff::VtLayout",
+          "value": "0xa0",
+          "kind": "vtable_slot",
+          "description": "CTileLayoutWnd vtable byte-offset for relayout(0,0) (re-flow the grid).",
+          "anchor": "vt+0xa0; MktSafeRelayout / grid relayout"
+        },
+        {
+          "symbol": "MktOff::NameColor",
+          "value": "0x12c",
+          "kind": "struct_offset",
+          "description": "Tile name-label ARGB text-color field. Code sets 0xFFFFD700 (gold) for selection, 0xFFFFFFFF (white) to clear.",
+          "anchor": "label+0x12c; g_mktHiLabel highlight"
+        }
+      ]
+    },
+    {
+      "category": "MktOff \u2014 category tree control (CTreeViewWnd)",
+      "note": "The visible category tree on the window; read each frame to detect the selected leaf + its parent branch. Branch/Leaf node vtables are build-specific and used to classify lines.",
+      "items": [
+        {
+          "symbol": "MktOff::TreeCtrl",
+          "value": "0x3b4",
+          "kind": "struct_offset",
+          "description": "*(window+0x3b4) = CTreeViewWnd (the category tree control).",
+          "anchor": "window+0x3b4; tree=*(window+TreeCtrl)"
+        },
+        {
+          "symbol": "MktOff::TreeCount",
+          "value": "0x1d8",
+          "kind": "struct_offset",
+          "description": "CTreeViewWnd visible line count.",
+          "anchor": "tree+0x1d8"
+        },
+        {
+          "symbol": "MktOff::TreeArr",
+          "value": "0x1dc",
+          "kind": "struct_offset",
+          "description": "CTreeViewWnd visible-line array base.",
+          "anchor": "tree+0x1dc; la = *(tree+TreeArr)"
+        },
+        {
+          "symbol": "MktOff::TreeSelIdx",
+          "value": "0x1f8",
+          "kind": "struct_offset",
+          "description": "CTreeViewWnd selected-line index (-1 = none).",
+          "anchor": "tree+0x1f8"
+        },
+        {
+          "symbol": "MktOff::TreeStride",
+          "value": "0x128",
+          "kind": "struct_offset",
+          "description": "Per-line struct stride in the visible-line array.",
+          "anchor": "la + i*0x128"
+        },
+        {
+          "symbol": "MktOff::TreeLineNode",
+          "value": "0x10",
+          "kind": "struct_offset",
+          "description": "Tree line struct -> tree-item node ptr.",
+          "anchor": "line+0x10; node=*(la+i*stride+0x10)"
+        },
+        {
+          "symbol": "MktOff::TreeItemLabel",
+          "value": "0x14",
+          "kind": "struct_offset",
+          "description": "Leaf tree-item node -> label char* (C string). Leaves use +0x14.",
+          "anchor": "leafNode+0x14"
+        },
+        {
+          "symbol": "MktOff::BranchLabel",
+          "value": "0x18",
+          "kind": "struct_offset",
+          "description": "Branch (folder) tree-item node -> label char* (C string). Branches use +0x18, leaves +0x14.",
+          "anchor": "branchNode+0x18; parentName walk"
+        },
+        {
+          "symbol": "MktOff::LeafVtable",
+          "value": "0x009DED30",
+          "kind": "abs_eqgame_addr",
+          "description": "CTreeViewNode LEAF vtable pointer; *(node)==LeafVtable identifies a selectable leaf.",
+          "anchor": "*(selItem)==Resolve(LeafVtable)"
+        },
+        {
+          "symbol": "MktOff::BranchVtable",
+          "value": "0x009DE8B8",
+          "kind": "abs_eqgame_addr",
+          "description": "CTreeViewNode BRANCH (folder) vtable pointer; *(node)==BranchVtable identifies a parent folder line.",
+          "anchor": "*(node)==Resolve(BranchVtable) in parent walk"
+        }
+      ]
+    },
+    {
+      "category": "Tile child control NAMES (SIDL EQUI_MarketplaceWnd.xml)",
+      "note": "String anchors for finding tile + window child controls via FindChild \u2014 these are the cross-build identifiers (names are stable across skins where present). From MktFillOneTile / TickMarketplace / hooks.",
+      "items": [
+        {
+          "symbol": "MKPW_Item_Label",
+          "value": "tile name label",
+          "kind": "misc",
+          "description": "Tile item-name label; also the ready-gate (absent => tile children not built yet, retry).",
+          "anchor": "MktFindChild(tile,'MKPW_Item_Label')"
+        },
+        {
+          "symbol": "MKPW_ItemCost_Label",
+          "value": "tile price label",
+          "kind": "misc",
+          "description": "Tile price label.",
+          "anchor": "MktSetChildText(tile,'MKPW_ItemCost_Label',price)"
+        },
+        {
+          "symbol": "MKPW_Item_Icon",
+          "value": "tile icon control",
+          "kind": "misc",
+          "description": "Tile icon control (CTextureAnimation host at +0x228).",
+          "anchor": "MktFindChild(tile,'MKPW_Item_Icon')"
+        },
+        {
+          "symbol": "A_DragItem",
+          "value": "icon atlas name",
+          "kind": "misc",
+          "description": "Shared item-icon texture-atlas animation; per-tile copy gives each its own frame.",
+          "anchor": "AnimFind('A_DragItem'); frame=icon-500"
+        },
+        {
+          "symbol": "MKPW_BuyBtn",
+          "value": "buy button",
+          "kind": "misc",
+          "description": "Native Buy button; force-enabled each frame (+0x1a=1); click (code 1) => '#mktbuy <id>'.",
+          "anchor": "g_mktBuyBtn; MktFindChild(window,'MKPW_BuyBtn')"
+        },
+        {
+          "symbol": "MKPW_DetailsInspect",
+          "value": "inspect button",
+          "kind": "misc",
+          "description": "General-tab Inspect button; force-enabled; click => '#mktview <id>' (server ItemPacketViewLink).",
+          "anchor": "g_mktInspectBtn; '#mktview'"
+        },
+        {
+          "symbol": "MKPW_AvailableFundsUpper",
+          "value": "funds number widget",
+          "kind": "misc",
+          "description": "Funds balance number; morphed to the category currency balance.",
+          "anchor": "g_mktFundsNum; MktFindChild(window,'MKPW_AvailableFundsUpper')"
+        },
+        {
+          "symbol": "MKPW_DetailsName",
+          "value": "detail name label",
+          "kind": "misc",
+          "description": "Detail-pane item name set on tile select.",
+          "anchor": "MktSetChildText(window,'MKPW_DetailsName',name)"
+        },
+        {
+          "symbol": "MKPW_AdditionalDetails",
+          "value": "detail desc widget",
+          "kind": "misc",
+          "description": "Detail-pane description/stat-line text set from MktItem.desc.",
+          "anchor": "MktFindChild(window,'MKPW_AdditionalDetails')"
+        },
+        {
+          "symbol": "MKPW_BuyPrice",
+          "value": "detail price widget",
+          "kind": "misc",
+          "description": "Detail-pane price text set from MktItem.price.",
+          "anchor": "MktFindChild(window,'MKPW_BuyPrice')"
+        },
+        {
+          "symbol": "Tile sale-decoration labels (hidden)",
+          "value": "MKPW_New_Label, MKPW_Was_Label, MKPW_OnSaleFor_Label, MKPW_SaleTimeLeft_Label, MKPW_AvailableTimeLeft_Label, MKPW_TimeLeft_Label, MKPW_ItemCost_CreditCardMoneyTypeLabel",
+          "kind": "misc",
+          "description": "Sale/credit-card decoration labels hidden per tile; MKPW_TimeLeft_Label also blanked.",
+          "anchor": "kHide[] in MktFillOneTile"
+        },
+        {
+          "symbol": "Funds label child walk",
+          "value": "+0xc then -0x10, child[0] at +0x10",
+          "kind": "struct_offset",
+          "description": "From MKPW_AvailableFundsUpper: parent=*(num+0xc)-0x10; funds 'Current Funds' label = *(parent+0x10) (first child).",
+          "anchor": "g_mktFundsLabel derivation in TickMarketplace"
+        },
+        {
+          "symbol": "CXWnd Enabled byte",
+          "value": "+0x1a",
+          "kind": "struct_offset",
+          "description": "CXWnd enabled byte; set 1 each frame on Buy/Inspect to keep them clickable.",
+          "anchor": "*(BYTE*)(btn+0x1a)=1"
+        }
+      ]
+    },
+    {
+      "category": "Marketplace 3D preview \u2014 eqgame resolvers & globals (Off::)",
+      "note": "Off:: symbols the Mkt preview path uses. Paper-doll + actor rebuild + globals. Image base 0x400000.",
+      "items": [
+        {
+          "symbol": "Off::FnPaperDollPreview",
+          "value": "0x00576CA0",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_00576ca0(viewport): clones the local player (source = GblPreviewSubject) into the viewport on a fresh actor (char-window paper-doll). __thiscall(ecx=viewport); RET 4 (one ignored stack arg).",
+          "anchor": "MktPaperDollFn; paperDoll(vp,0); clone read at vp+0x1e0"
+        },
+        {
+          "symbol": "Off::FnViewportSetModel",
+          "value": "0x005768C0",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_005768c0(viewport, sourceSpawn, charFrame): viewport SetModel; clones source actor into the preview region. __thiscall. (Earlier path; superseded by FnPaperDollPreview but resolver retained.)",
+          "anchor": "Off::FnViewportSetModel; FUN_005977a0 clone -> SetPreviewModel"
+        },
+        {
+          "symbol": "Off::FnSetWeaponSlot",
+          "value": "0x005923F0",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_005923f0(clone, slot, 'ITxxxx', 0, 1): set one held-weapon model by idfile string; render-only on a clone (net path gated to local player). __thiscall.",
+          "anchor": "MktSetWeaponFn; overlay weapon ornament on clone"
+        },
+        {
+          "symbol": "Off::FnAppearanceApply",
+          "value": "0x00596B20",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_00596b20(spawn, appearanceData, flag): apply appearance-data struct + rebuild actor (calls CreatePlayerActor + per-slot armor loop). NOT used in the shipped preview (AVs on null struct); resolver retained.",
+          "anchor": "MktApplyFn; data+0x64 equip array (9x5), +0x140 apply flag"
+        },
+        {
+          "symbol": "Off::FnCreatePlayerActor",
+          "value": "0x0048F4B0",
+          "kind": "abs_eqgame_addr",
+          "description": "CDisplay::CreatePlayerActor(cd, entity, p2, 1, 2, p5, 1): rebuilds a spawn's render actor. __thiscall, 6 stack args, RET 0x18. p5 MUST be literal (uint*)1.",
+          "anchor": "FnCreateActor_t; createActor(cd,player,0,1,2,(uint*)1,1)"
+        },
+        {
+          "symbol": "Off::FnDisplayActorCleanup",
+          "value": "0x00490A10",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_00490a10(CDisplay, oldActor): reap the replaced old actor from the world render scene (anti-ghost). Call after each CreatePlayerActor when actor ptr changed. __thiscall.",
+          "anchor": "MktActorReapFn/MktActorCleanupFn; reap a0!=a1"
+        },
+        {
+          "symbol": "Off::GblPreviewSubject",
+          "value": "0x00DD2630",
+          "kind": "global_ptr",
+          "description": "*(0x00DD2630) = current preview-subject spawn = the local player. Source for the paper-doll clone + the slot pokes.",
+          "anchor": "DAT_00DD2630; player=*(GblPreviewSubject)"
+        },
+        {
+          "symbol": "Off::GblCDisplay",
+          "value": "0x00DD2660",
+          "kind": "global_ptr",
+          "description": "*(0x00DD2660) = CDisplay singleton ptr (cd arg to CreatePlayerActor + the actor reap).",
+          "anchor": "DAT_00DD2660; cd=*(GblCDisplay)"
+        },
+        {
+          "symbol": "Off::GblEngine",
+          "value": "0x015D46A4",
+          "kind": "global_ptr",
+          "description": "*(0x015D46A4) = EQGraphicsDX9 render-engine object ptr; its vtable (in EQGraphicsDX9.dll) holds the preview-region methods. Resolver retained (struct-rebuild path not shipped).",
+          "anchor": "DAT_015d46a4; engine->vtbl+0x110 SetPreviewModel"
+        }
+      ]
+    },
+    {
+      "category": "Marketplace 3D preview \u2014 struct offsets on player/spawn & viewport",
+      "note": "Equip arrays, tint array, actor ptr, viewport clone ptr \u2014 all poked by MktRenderClone / MktRenderCloneBareRebuild / MktShowPreview.",
+      "items": [
+        {
+          "symbol": "Preview viewport ptr",
+          "value": "window+0x4cc",
+          "kind": "struct_offset",
+          "description": "*(CMarketplaceWnd+0x4cc) = the built 3D preview viewport object (fed to the paper-doll).",
+          "anchor": "vp=*(window+0x4cc) in MktShowPreview"
+        },
+        {
+          "symbol": "Equip array (primary)",
+          "value": "player+0xf30",
+          "kind": "struct_offset",
+          "description": "Spawn equipment array: 9 slots x 0x14 bytes (5 ints). int[0]=Material/ModelId. Slot poked = +0xf30 + slot*0x14.",
+          "anchor": "player+0xf30 + s*0x14 + i*4; slot int0 = material/model"
+        },
+        {
+          "symbol": "Equip array (parallel copy)",
+          "value": "player+0x1da0",
+          "kind": "struct_offset",
+          "description": "Parallel copy of the 9x0x14 equipment array (FUN_00596b20 writes both); preview pokes both.",
+          "anchor": "player+0x1da0 + s*0x14 + i*4"
+        },
+        {
+          "symbol": "Per-slot tint array",
+          "value": "player+0xefc",
+          "kind": "struct_offset",
+          "description": "9-DWORD per-slot armor TINT array (0xAARRGGBB). FUN_005a4360 returns *(spawn+0xefc+slot*4); fed to FUN_00594E50. Poke +0xefc+slot*4 for color preview.",
+          "anchor": "player+0xefc + s*4; tint, NOT equip int[4]"
+        },
+        {
+          "symbol": "Render actor ptr",
+          "value": "player/spawn+0x101c",
+          "kind": "struct_offset",
+          "description": "Spawn -> render actor pointer. Read before/after CreatePlayerActor to detect change (reap gate); clone's actor likewise.",
+          "anchor": "a0=*(player+0x101c); reap if a0!=a1"
+        },
+        {
+          "symbol": "Viewport clone ptr",
+          "value": "viewport+0x1e0",
+          "kind": "struct_offset",
+          "description": "After paper-doll, *(viewport+0x1e0) = the preview clone spawn; PreviewApply repaints its slots.",
+          "anchor": "clone=*(vpd+0x1e0)"
+        },
+        {
+          "symbol": "Chest render-slot int0 (robe probe)",
+          "value": "player+0xf44",
+          "kind": "struct_offset",
+          "description": "Render slot 1 (chest) int0 = +0xf30 + 1*0x14 = +0xf44; 10..16 => a robe is equipped (robe-hint gate).",
+          "anchor": "curChest=*(player+0xf44); 10<=v<=16 robe"
+        },
+        {
+          "symbol": "Robe-material range",
+          "value": "10..16",
+          "kind": "misc",
+          "description": "Chest material values 10-16 denote a full-body robe model (drives the robe bare-rebuild + hint).",
+          "anchor": "MktMaybeHint; MktRenderClone ps==1"
+        },
+        {
+          "symbol": "CreatePlayerActor call signature",
+          "value": "(cd, player, 0, 1, 2, (uint*)1, 1)",
+          "kind": "misc",
+          "description": "Exact arg pattern; p5 = literal (uint*)1 sentinel (NOT &localVar) or rebuild no-ops and clones leak.",
+          "anchor": "createActor(cd,(int*)player,(void*)0,1,2,(uint*)1,1)"
+        },
+        {
+          "symbol": "Preview bare/repaint masks",
+          "value": "ps9=0x7F/0x7F; ps1=0x0E/0x02",
+          "kind": "misc",
+          "description": "Slot bitmasks (bits 0-6 = head/chest/arms/wrists/hands/legs/feet) for full-suit (ps9) and robe (ps1) bare-rebuild + repaint.",
+          "anchor": "MktRenderCloneBareRebuild bareMask/repaintMask"
+        },
+        {
+          "symbol": "pslot indices",
+          "value": "0..8 armor/weapon; 9 = full suit",
+          "kind": "misc",
+          "description": "Preview equip-slot index: 0 head,1 chest,2 arms,3 wrists,4 hands,5 legs,6 feet,7 primary,8 secondary; 9 = full armor suit (special).",
+          "anchor": "MktItem.pslot; MktRenderClone switch"
+        }
+      ]
+    },
+    {
+      "category": "EQGraphicsDX9.dll preview engine vtable (RVAs, image base 0x10000000)",
+      "note": "Cross-DLL engine methods reached via *(GblEngine 0x015D46A4)->vtbl. RVAs into EQGraphicsDX9.dll. From the recon memory; the shipped path uses FnPaperDollPreview not these directly, but the SET-MODEL family is what a porter needs to drive a preview.",
+      "items": [
+        {
+          "symbol": "engine vtbl+0x108 (enable region)",
+          "value": "RVA 0x861a0",
+          "kind": "eqgfx_rva",
+          "description": "Enable/disable preview render region (FUN_576070 calls this). FUN_100861a0.",
+          "anchor": "vtbl+0x108; EQGraphicsDX9.dll"
+        },
+        {
+          "symbol": "engine vtbl+0x10c",
+          "value": "RVA 0x861d0",
+          "kind": "eqgfx_rva",
+          "description": "Region getter (slot-ready byte at slot+0x10). FUN_100861d0.",
+          "anchor": "vtbl+0x10c"
+        },
+        {
+          "symbol": "engine vtbl+0x110 (SetPreviewModel)",
+          "value": "RVA 0x861f0",
+          "kind": "eqgfx_rva",
+          "description": "SetPreviewModel(modelObj, slot): slot 0=object/OPW,1=avatar/marketplace; engine+0xd7d8 = array[2] of preview slots. THE set-actor call. FUN_100861f0.",
+          "anchor": "MktSetPreviewFn (engine vtbl+0x110); modelObj->vtbl[0xb8] renderable"
+        },
+        {
+          "symbol": "engine vtbl+0x114 (render)",
+          "value": "RVA 0x86240",
+          "kind": "eqgfx_rva",
+          "description": "Render region (viewport Draw slot 3 calls this with centerX,centerY,halfW,halfH,mode). FUN_10086240.",
+          "anchor": "vtbl+0x114; viewport Draw FUN_00575ac0"
+        },
+        {
+          "symbol": "engine vtbl+0x118 (set region+mode)",
+          "value": "RVA 0x86270",
+          "kind": "eqgfx_rva",
+          "description": "Set region rect + mode flag (FUN_576070 calls this; mode from viewport+0x1d8). FUN_10086270.",
+          "anchor": "vtbl+0x118"
+        },
+        {
+          "symbol": "engine vtbl+0x11c",
+          "value": "RVA 0x862a0",
+          "kind": "eqgfx_rva",
+          "description": "Sets global DAT_10179110+0xbc (mode push/pop around SetModel in FUN_005768c0). FUN_100862a0.",
+          "anchor": "vtbl+0x11c; engine->vtbl[0x11c](mode) brackets in FUN_005768c0"
+        },
+        {
+          "symbol": "engine vtbl+0x120",
+          "value": "RVA 0x862c0",
+          "kind": "eqgfx_rva",
+          "description": "Set vec3 (light/cam pos via FUN_100b85a0). FUN_100862c0.",
+          "anchor": "vtbl+0x120"
+        },
+        {
+          "symbol": "engine vtbl+0x124",
+          "value": "RVA 0x86310",
+          "kind": "eqgfx_rva",
+          "description": "Setter (byte). FUN_10086310.",
+          "anchor": "vtbl+0x124"
+        },
+        {
+          "symbol": "engine vtbl+0x128",
+          "value": "RVA 0x86330",
+          "kind": "eqgfx_rva",
+          "description": "Last preview-region method (vtable ends ~+0x138). FUN_10086330.",
+          "anchor": "vtbl+0x128"
+        },
+        {
+          "symbol": "FUN_10017e50 (slot bind)",
+          "value": "RVA 0x17e50",
+          "kind": "eqgfx_rva",
+          "description": "SetPreviewModel helper: stores renderable at slot+4; reads bbox via renderable vtbl+0x70/+0x74; light at slot+0x14, scene node at slot+0x18.",
+          "anchor": "called by RVA 0x861f0; modelObj->vtbl+0xb8 renderable, +0x254 node"
+        },
+        {
+          "symbol": "render-mgr global (engine+4)",
+          "value": "0x015D46A8",
+          "kind": "global_ptr",
+          "description": "DAT_015d46a8 = render manager (engine+4); vtbl+0x64 clones an actor (the clone-leak source).",
+          "anchor": "DAT_015d46a8; actor clone in FUN_00595ed0"
+        },
+        {
+          "symbol": "render-state global (engine+8)",
+          "value": "0x015D46AC",
+          "kind": "global_ptr",
+          "description": "DAT_015d46ac (engine+8); vtbl+0x24 transfers render state old->new actor (investigated, not in shipped path).",
+          "anchor": "DAT_015d46ac; render-state transfer"
+        }
+      ]
+    },
+    {
+      "category": "Off:: shared symbols referenced by Mkt* functions",
+      "note": "Off:: constants the marketplace + node-fight code share (CXStr ctor, list helpers, chat send, armor-apply primitive). Image base 0x400000.",
+      "items": [
+        {
+          "symbol": "Off::FnCxstrCtor",
+          "value": "0x00805C20",
+          "kind": "abs_eqgame_addr",
+          "description": "CXStr::CXStr(this, char* src) from a literal. Same address as MktOff::CXStrCtor; used by PopulateTimeCombo/SetWidgetText/list helpers.",
+          "anchor": "Off::FnCxstrCtor; CSidlManager + combo + listbox text"
+        },
+        {
+          "symbol": "Off::FnCxstrCStr",
+          "value": "0x008061C0",
+          "kind": "abs_eqgame_addr",
+          "description": "CXStr::c_str() -> const char*. Reads typed bid text; available to Mkt text reads.",
+          "anchor": "Off::FnCxstrCStr 0x008061C0"
+        },
+        {
+          "symbol": "Off::SidlMgrPtr",
+          "value": "0x015D3D08",
+          "kind": "global_ptr",
+          "description": "*DAT_015D3D08 = CSidlManager*. SAME as MktOff::UiMgr; used by both node-fight + marketplace tile factory.",
+          "anchor": "Off::SidlMgrPtr / MktOff::UiMgr"
+        },
+        {
+          "symbol": "Off::FnComboAddItem",
+          "value": "0x00858C20",
+          "kind": "abs_eqgame_addr",
+          "description": "CComboWnd::InsertChoice(list,&CXStr,width,0,flags). Used by PopulateTimeCombo (node-fight, shares the Mkt helper region).",
+          "anchor": "Off::FnComboAddItem; combo+0x1D8 internal list"
+        },
+        {
+          "symbol": "Off::FnListClearList",
+          "value": "0x00854220",
+          "kind": "abs_eqgame_addr",
+          "description": "CListWnd deselect-all (NOT a truncate). Node-fight listbox helper alongside Mkt code.",
+          "anchor": "FUN_00854220"
+        },
+        {
+          "symbol": "Off::FnListAddString",
+          "value": "0x008580C0",
+          "kind": "abs_eqgame_addr",
+          "description": "CListWnd::AddString(list,&name,color,id,0,NULL)->row. Listbox helper.",
+          "anchor": "FUN_008580C0"
+        },
+        {
+          "symbol": "Off::FnListSetItemText",
+          "value": "0x008575B0",
+          "kind": "abs_eqgame_addr",
+          "description": "CListWnd::SetItemText(list,row,col,&text). Listbox helper.",
+          "anchor": "FUN_008575B0"
+        },
+        {
+          "symbol": "Off::FnChatSend",
+          "value": "0x005369E0",
+          "kind": "abs_eqgame_addr",
+          "description": "CChatManager::SendChatMessage; backs SendServerCommand used by Buy ('#mktbuy')/Inspect ('#mktview')/catalog request ('#mkt').",
+          "anchor": "Off::FnChatSend; ChatMgrPtr 0x00E67CCC"
+        },
+        {
+          "symbol": "Off::ChatMgrPtr",
+          "value": "0x00E67CCC",
+          "kind": "global_ptr",
+          "description": "*DAT_00E67CCC = CChatManager singleton (target of FnChatSend).",
+          "anchor": "Off::ChatMgrPtr"
+        },
+        {
+          "symbol": "Off::FnDspChat",
+          "value": "0x0051F1A0",
+          "kind": "abs_eqgame_addr",
+          "description": "CEverQuest::dsp_chat(this,text,color,echo,brackets): free-form chat print; preview robe hint uses g_orig_DspChat (trampoline of this).",
+          "anchor": "Off::FnDspChat; MktMaybeHint echo=1"
+        },
+        {
+          "symbol": "Off::FnArmorApply",
+          "value": "0x00594E50",
+          "kind": "abs_eqgame_addr",
+          "description": "FUN_00594E50: per-slot armor apply+repaint primitive. ArmorOrn::PreviewApply/RefreshWornSlot call the trampoline g_orig of this to repaint the preview clone's slots. __thiscall, prologue 6A FF 68; 9 args.",
+          "anchor": "Off::FnArmorApply; g_orig(spawn,renderSlot,material,0,0,0,0,color,1)"
+        },
+        {
+          "symbol": "Off::FnGetItem",
+          "value": "0x0042DEC0",
+          "kind": "abs_eqgame_addr",
+          "description": "GetItem(container,&out,wornSlot): worn-item walk used by ArmorOrn (shared with preview RefreshWornSlot).",
+          "anchor": "Off::FnGetItem; ArmorOrn g_GetItem"
+        },
+        {
+          "symbol": "Off::GblLocalPC",
+          "value": "0x00DD261C",
+          "kind": "global_ptr",
+          "description": "*(0x00DD261C) = local PC base for the worn-item walk (ArmorOrn). Distinct from GblPreviewSubject.",
+          "anchor": "Off::GblLocalPC"
+        },
+        {
+          "symbol": "FUN_005a4360 (per-slot tint getter)",
+          "value": "0x005A4360",
+          "kind": "abs_eqgame_addr",
+          "description": "For a PC spawn returns *(spawn+0xefc+slot*4); the value FUN_00594E50 uses as the slot color. Documents why the preview pokes +0xefc (not equip int[4]).",
+          "anchor": "comment in MktRenderClone: 'FUN_005a4360 feeds to FUN_00594E50'"
+        }
+      ]
+    },
+    {
+      "category": "MktItem cache & view limits",
+      "note": "Cache/array sizing constants \u2014 not addresses but build-tuning the porter must match to the feed.",
+      "items": [
+        {
+          "symbol": "g_mktItems capacity",
+          "value": "4000",
+          "kind": "misc",
+          "description": "Catalog cache size; parse guard derives from sizeof. Was 800->2000->4000 (840 armor ornaments pushed catalog to 2141). Must exceed total catalog rows or last parent's tiles vanish.",
+          "anchor": "static MktItem g_mktItems[4000]"
+        },
+        {
+          "symbol": "g_mktView capacity",
+          "value": "64",
+          "kind": "misc",
+          "description": "Per-leaf view array size (max tiles considered for one category).",
+          "anchor": "g_mktView[64]; g_mktViewN<64"
+        },
+        {
+          "symbol": "MKT_MAX_TILES",
+          "value": "50",
+          "kind": "misc",
+          "description": "Max tiles materialized per leaf (grid scrolls beyond what fits); also sizes per-tile icon-anim array.",
+          "anchor": "MKT_MAX_TILES=50"
+        },
+        {
+          "symbol": "MktItem wire row",
+          "value": "[BOZ_MKT]|parent|subcat|itemid|name|icon|price|currency|level|desc|model|pslot|color",
+          "kind": "misc",
+          "description": "Server feed row format parsed by ParseBozMkt; trailing model|pslot|color drive the 3D preview (color hex 0xAARRGGBB, default 0xFF000000).",
+          "anchor": "ParseBozMkt; [BOZ_MKT_START]/[BOZ_MKT_END]; [BOZ_MKT_LEVEL]; [BOZ_FUNDS]"
+        }
+      ]
+    }
+  ]
+}

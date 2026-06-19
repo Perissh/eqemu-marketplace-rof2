@@ -1,0 +1,334 @@
+{
+  "units": [
+    {
+      "name": "MktOff namespace (offset block)",
+      "start_line": 2298,
+      "end_line": 2345,
+      "role": "All reverse-engineered offsets/addresses for the marketplace: CMarketplaceWnd ptr, CreateCats/RenderCats fns, node/CXStr/tile/grid/tree field offsets, tile factory + icon-anim fns, vtable slot indices, tree leaf/branch vtables.",
+      "classification": "offset_block"
+    },
+    {
+      "name": "Marketplace banner comment",
+      "start_line": 2284,
+      "end_line": 2297,
+      "role": "Section header documenting the MARKETPLACE HYBRID design + key RE'd addresses; marks the start of the marketplace block.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktRenameCategory",
+      "start_line": 2366,
+      "end_line": 2375,
+      "role": "Rewrite a category node's internal-name CXStr in place and mark it non-empty so it renders.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktMakeNode",
+      "start_line": 2381,
+      "end_line": 2394,
+      "role": "Build one category tree node via the client's own ctor (folder/leaf), auto-linking children to a parent.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktAddBranch",
+      "start_line": 2399,
+      "end_line": 2413,
+      "role": "Add a top-level category with nested child leaves, appending the parent node to the window's category array.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktAddGearBranch forward decl",
+      "start_line": 2418,
+      "end_line": 2418,
+      "role": "Forward declaration of the data-driven gear-leaf branch builder (defined after g_mktItems).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktPopulate",
+      "start_line": 2419,
+      "end_line": 2553,
+      "role": "Top-level category-tree builder: grows the array, hides 2 native defaults, and adds every BOZ branch (Cross-Class Spells/Skills/Discs, Augments, Soul Grafting, Currency Exchange, Racial Arts, 4 Gear tiers, Non-Raid Gear, Ornaments, Mounts, Robe/Armor/Velious ornaments), then re-renders.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "Mkt pointer-safety forward decls",
+      "start_line": 2555,
+      "end_line": 2558,
+      "role": "Forward decls for MktReadable/MktExecutable/MktTileLooksValid (defined just below).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktFindChild",
+      "start_line": 2563,
+      "end_line": 2568,
+      "role": "Helper: find a named child control inside a tile via the engine find-child fn.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktSetChildText",
+      "start_line": 2571,
+      "end_line": 2578,
+      "role": "Helper: set a tile child label's text via CXWnd::SetWindowText vtable call.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktSetWidgetText",
+      "start_line": 2581,
+      "end_line": 2587,
+      "role": "Helper: set a widget's text directly when the caller already holds the pointer.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktHideChild",
+      "start_line": 2590,
+      "end_line": 2595,
+      "role": "Helper: hide a tile child control (SetVisible false).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktReadable",
+      "start_line": 2603,
+      "end_line": 2611,
+      "role": "Pointer-safety guard: VirtualQuery a region is committed/readable for a given size.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktExecutable",
+      "start_line": 2612,
+      "end_line": 2619,
+      "role": "Pointer-safety guard: a pointer points at committed executable code.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktTileLooksValid",
+      "start_line": 2622,
+      "end_line": 2627,
+      "role": "Pointer-safety guard: a node looks like a live tile (readable self+vtable, SetVisible slot is real code).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktSafeSetVisible",
+      "start_line": 2631,
+      "end_line": 2636,
+      "role": "Validated SetVisible on a tile (guards against half-built/freed vtables).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktSafeHide",
+      "start_line": 2637,
+      "end_line": 2637,
+      "role": "One-liner: MktSafeSetVisible(wnd,0).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktSafeRelayout",
+      "start_line": 2639,
+      "end_line": 2646,
+      "role": "Validated grid relayout via the layout vtable method.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktHideAllTiles",
+      "start_line": 2650,
+      "end_line": 2660,
+      "role": "Clear the item grid by hiding every child tile, validated against freed nodes.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktItem struct",
+      "start_line": 2668,
+      "end_line": 2681,
+      "role": "The cached catalog-row record (parent/subcat/item_id/name/icon/price/currency/level/desc + preview model/pslot/color).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "g_mktItems / count / collecting globals",
+      "start_line": 2682,
+      "end_line": 2689,
+      "role": "[BOZ_MKT] feed cache: g_mktItems[4000], g_mktItemCount, g_mktCollecting.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "g_mktView / g_mktViewN",
+      "start_line": 2691,
+      "end_line": 2693,
+      "role": "Items gathered for the currently-selected leaf (rebuilt on category change).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktAddGearBranch",
+      "start_line": 2702,
+      "end_line": 2717,
+      "role": "Build a gear-tier parent's slot leaves DATA-DRIVEN from the live g_mktItems cache (fallback list if feed not yet loaded).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "g_mktPlayerLevel",
+      "start_line": 2719,
+      "end_line": 2721,
+      "role": "Player level from [BOZ_MKT_LEVEL]; drives the 'My Level and Below' tab.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "g_mktSouls/Conquest/Raid/FundsValid",
+      "start_line": 2723,
+      "end_line": 2729,
+      "role": "Player currency balances from [BOZ_FUNDS]; drive the funds display morph.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "Marketplace WndNotif/buy/selection globals",
+      "start_line": 2731,
+      "end_line": 2750,
+      "role": "Click-to-buy state: g_origMktWndNotif, g_mktVtableCopy, hooked-wnd, Buy/Inspect btn ptrs, selection idx/itemid, highlight label, funds widgets, MKT_MAX_TILES.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktStrip",
+      "start_line": 2754,
+      "end_line": 2758,
+      "role": "Helper: strip leading sort-space / tree-glyph chars from a leaf label.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktLookupCategory",
+      "start_line": 2764,
+      "end_line": 2789,
+      "role": "Gather cached items for the selected parent+subcat into g_mktView ('My Level and Below' special case sorts by level).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "g_mktFilledCat / g_mktFilledN / g_mktDone",
+      "start_line": 2794,
+      "end_line": 2799,
+      "role": "Per-frame tile-fill progress state for the displayed category.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "g_mktIconAnim + MktItemIconAnim",
+      "start_line": 2812,
+      "end_line": 2834,
+      "role": "Per-tile private copy of the A_DragItem icon atlas (FindAnimation+ctor+copy) so each tile shows its own item icon.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktFillOneTile",
+      "start_line": 2836,
+      "end_line": 2871,
+      "role": "Fill one tile (show, label/price/icon, hide sale decorations), SEH-guarded; returns false to retry if children not built yet.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktTickTiles",
+      "start_line": 2881,
+      "end_line": 2943,
+      "role": "Per-frame two-phase tile maintenance for the selected leaf: phase1 make one tile/frame, phase2 fill from g_mktView, hide extras, relayout.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktGridIndexOf",
+      "start_line": 2949,
+      "end_line": 2961,
+      "role": "Map a clicked grid-child widget to its tile index (== g_mktView index).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "Mkt tick forward decls + populate-state globals",
+      "start_line": 2966,
+      "end_line": 2971,
+      "role": "Forward decls (SendServerCommand, InstallMktVTableHook) + g_mktPopulated/Requested/NeedRepop/LastSel state used by TickMarketplace.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "TickMarketplace",
+      "start_line": 2972,
+      "end_line": 3121,
+      "role": "Per-frame marketplace driver (called from MyHook_PwDraw): open/close reset, populate tree once, request #mkt catalog, install per-instance WndNotif hook, force-enable Buy/Inspect, read tree selection, drive MktTickTiles, re-gold the selection, morph funds display, fill detail pane. SEH-wrapped.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "ParseBozMkt",
+      "start_line": 3160,
+      "end_line": 3185,
+      "role": "Parse one [BOZ_MKT]| catalog row into g_mktItems (incl. optional trailing model/pslot/color preview fields).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MyHook_PwDraw (per-frame draw hook)",
+      "start_line": 2022,
+      "end_line": 2055,
+      "role": "CPlayerWnd::Draw trampoline hook. Shared: also forces melee MP-bar widgets visible (2027-2039), calls TickCycleHeader (2044, Node Fight) and AcFlushPendingFromMainThread (2052, anti-cheat). MARKETPLACE part = the single call TickMarketplace() at line 2047.",
+      "classification": "shared_fork"
+    },
+    {
+      "name": "MyHook_DspChat (chat hook)",
+      "start_line": 3679,
+      "end_line": 3907,
+      "role": "CEverQuest::dsp_chat trampoline hook parsing [BOZ_*] tags. Shared: handles SPELL_UNLOCK/ARMORORN/MAXMANA/SKILL_GRANTS/SKILL_MIRROR/NODE_ACCESS/OPEN_WINDOW/NODES/NODE/CYCLE/SOUL_BANK/SLOTS (non-marketplace). MARKETPLACE branches: [BOZ_MKT_START] 3810-3814, [BOZ_MKT_LEVEL] 3815-3818, [BOZ_MKT_END] 3819-3825, [BOZ_MKT] (-> ParseBozMkt) 3826-3829, [BOZ_FUNDS] 3830-3843.",
+      "classification": "shared_fork"
+    },
+    {
+      "name": "Marketplace 3D preview section header",
+      "start_line": 4742,
+      "end_line": 4755,
+      "role": "Comment header documenting the native paper-doll preview machinery used by the marketplace preview functions.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "Mkt preview typedefs",
+      "start_line": 4756,
+      "end_line": 4761,
+      "role": "Function-pointer typedefs for the preview path (paper-doll, set-weapon, appearance-apply, set-preview, actor-reap).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "Mkt preview state globals",
+      "start_line": 4763,
+      "end_line": 4774,
+      "role": "g_mktPreviewLastId / g_mktPreviewBusy debounce + g_mktPreviewEnabled toggle.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktRenderCloneBareRebuild",
+      "start_line": 4796,
+      "end_line": 4853,
+      "role": "Bare-rebuild preview over worn gear: save+bare render slots, CreatePlayerActor, paper-doll clone, ArmorOrn::PreviewApply repaint, __finally restore. (Depends on ArmorOrn::PreviewApply.)",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktRenderClone",
+      "start_line": 4873,
+      "end_line": 4910,
+      "role": "Render the preview clone wearing model on slot ps: routes full-suit/robe to bare-rebuild, else pokes render arrays + tint, paper-dolls, __finally restores.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "g_mktRobeHintShown + MktMaybeHint",
+      "start_line": 4919,
+      "end_line": 4942,
+      "role": "One-time chat hint when previewing chest armor under an equipped robe (uses g_orig_DspChat directly).",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MktShowPreview",
+      "start_line": 4944,
+      "end_line": 4964,
+      "role": "Entry point: render the local avatar in the preview pane wearing the selected item (or bare), debounced; called from the WndNotif tile-select branch.",
+      "classification": "marketplace_only"
+    },
+    {
+      "name": "MyHook_MktWndNotification (marketplace WndNotification hook)",
+      "start_line": 4975,
+      "end_line": 5037,
+      "role": "Per-instance vtable[34] hook on CMarketplaceWnd. Entirely marketplace: Buy button -> #mktbuy + swallow (4981-4989); Inspect button -> #mktview + swallow (4994-5002); tile-select code 0x20 -> record selection, set detail name, MktShowPreview, highlight (5007-5035); else delegates to g_origMktWndNotif.",
+      "classification": "shared_fork"
+    },
+    {
+      "name": "InstallMktVTableHook",
+      "start_line": 5039,
+      "end_line": 5066,
+      "role": "Install the marketplace WndNotif hook: copy the window's vtable, swap slot 34 to MyHook_MktWndNotification, repoint wnd[0].",
+      "classification": "marketplace_only"
+    }
+  ],
+  "notes": "FILE: C:/BOZ-Client-RoF2/src/dllmain_rof2.cpp (6365 lines).\n\nCARVE-OUT GUIDANCE / GOTCHAS:\n\n1) The prompt's landmark \"marketplace WndNotification hook (g_origMktWndNotif) ~6119-6189\" is WRONG. Lines 6119-6195 are ArmorOrn::RefreshWornSlot/PreviewApply/Install (namespace ArmorOrn, 5996-6195) -- NOT marketplace. The REAL marketplace WndNotif hook is MyHook_MktWndNotification at 4975-5037 (install 5039-5066), declared with globals at 2737-2750.\n\n2) The dsp_chat hook is MyHook_DspChat (3679-3907), NOT near line 284. Line 284 is just a comment describing the dsp_chat signature inside the Off namespace. It is a shared_fork: only 5 branches are marketplace ([BOZ_MKT_START/LEVEL/END/MKT/FUNDS], lines 3810-3843). InstallHook_DspChat (3909-~3965) installs it and is shared (also drives Node Fight, spells, armor, etc.) -- left out of marketplace_only.\n\n3) MyHook_PwDraw (2022-2055) is shared_fork: ONLY line 2047 (TickMarketplace();) is marketplace. The rest (melee MP-bar fix, TickCycleHeader, AcFlushPendingFromMainThread) is non-marketplace. InstallHook_PwDraw (2057-2106) is shared.\n\nSHARED DEPENDENCIES the carve-out MUST also provide (NOT marketplace-only, used by other systems too -- do not move them, replicate/share them):\n  - Off namespace (starts line 23): holds the shared Resolve base + MANY marketplace-preview offsets at 478-517 (FnViewportSetModel, GblPreviewSubject 486, GblCDisplay 487, FnDisplayActorCleanup 493, FnPaperDollPreview 507, FnSetWeaponSlot 508, FnAppearanceApply 514, GblEngine 517) AND FnCreatePlayerActor (462). These preview offsets live in the SHARED Off namespace, not MktOff -- the carve-out needs them.\n  - Resolve() at 566; IsReadable; Log namespace (529+).\n  - SendServerCommand (definition at 4239-~4270) -- shared with Node Fight; marketplace calls it for #mkt/#mktbuy/#mktview.\n  - CopyField (3125-3134) -- shared by ParseBozMkt AND ParseBozNode; marketplace's ParseBozMkt + the [BOZ_FUNDS] branch call it.\n  - ArmorOrn::PreviewApply (6144-6149) -- called by MktRenderCloneBareRebuild/MktRenderClone for full-suit/armor repaint; lives in namespace ArmorOrn.\n  - g_orig_DspChat / g_dspChatThis -- MktMaybeHint emits the robe hint through g_orig_DspChat directly.\n\nNON-MARKETPLACE code interleaved INSIDE the marketplace line-range (do NOT carve): CopyField (3125-3134), ParseBozNode (3138-3156), and everything from 3187 (SetListRowColor) through 3678 (Node Fight listbox/time-pick/ConstructProbe/spell-table). TickCycleHeader (2264-2282) and the SendServerCommand fwd-decl (2252) just before the marketplace banner are Node Fight.\n\nFORWARD DECLS for marketplace symbols also appear at: 2020 (TickMarketplace fwd), 2966-2967 (SendServerCommand + InstallMktVTableHook fwds). These are inside marketplace-related contexts and listed."
+}

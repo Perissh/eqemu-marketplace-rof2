@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EQ Marketplace — Catalog Builder</title>
+<style>
+  :root { --bg:#14171c; --panel:#1d222b; --panel2:#232936; --line:#333b49; --txt:#dfe6f2;
+          --mut:#8b97aa; --gold:#d9b54a; --accent:#4a86c8; --red:#c8504a; --green:#4aa86a; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:14px/1.45 "Segoe UI",system-ui,sans-serif; background:var(--bg); color:var(--txt); }
+  header { display:flex; align-items:center; gap:14px; padding:10px 16px; background:var(--panel);
+           border-bottom:1px solid var(--line); position:sticky; top:0; z-index:5; }
+  header h1 { font-size:16px; margin:0; color:var(--gold); font-weight:600; }
+  header .db { color:var(--mut); font-size:12px; }
+  header .sp { flex:1; }
+  button { font:inherit; cursor:pointer; border:1px solid var(--line); background:var(--panel2);
+           color:var(--txt); border-radius:5px; padding:5px 10px; }
+  button:hover { border-color:var(--accent); }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.gold { background:var(--gold); border-color:var(--gold); color:#1a1a1a; font-weight:600; }
+  button.mini { padding:2px 7px; font-size:12px; }
+  button.danger:hover { border-color:var(--red); color:#f3b6b3; }
+  input, select { font:inherit; background:#10131a; color:var(--txt); border:1px solid var(--line);
+                  border-radius:5px; padding:6px 8px; }
+  input:focus, select:focus { outline:none; border-color:var(--accent); }
+  .wrap { display:grid; grid-template-columns:1.3fr 1fr; gap:14px; padding:14px; align-items:start; }
+  .panel { background:var(--panel); border:1px solid var(--line); border-radius:8px; }
+  .panel > .hd { padding:10px 14px; border-bottom:1px solid var(--line); font-weight:600; color:var(--gold);
+                 display:flex; align-items:center; gap:8px; }
+  .panel > .bd { padding:12px 14px; }
+  .muted { color:var(--mut); }
+  .empty { color:var(--mut); padding:20px; text-align:center; }
+
+  /* tree */
+  .cat { border:1px solid var(--line); border-radius:7px; margin-bottom:10px; overflow:hidden; }
+  .cat > .chd { display:flex; align-items:center; gap:8px; padding:8px 10px; background:var(--panel2);
+                cursor:pointer; }
+  .cat > .chd .nm { font-weight:600; }
+  .cat > .chd .ct { color:var(--mut); font-size:12px; }
+  .cat .acts { margin-left:auto; display:flex; gap:5px; }
+  .car { display:inline-block; width:11px; text-align:center; color:var(--mut); font-size:10px; user-select:none; }
+  .sub { border-top:1px solid var(--line); }
+  .sub > .shd { display:flex; align-items:center; gap:8px; padding:6px 10px 6px 16px; background:#1a1f29; cursor:pointer; }
+  .sub > .shd .nm { color:#bcd; }
+  .item { display:flex; align-items:center; gap:8px; padding:5px 10px 5px 34px; border-top:1px solid #232a36; }
+  .item img { width:20px; height:20px; image-rendering:pixelated; opacity:.85; }
+  .item .nm { flex:1; }
+  .item .pr { color:var(--gold); font-size:12px; white-space:nowrap; }
+  .item .pv { color:var(--mut); font-size:11px; font-style:italic; }
+  .item .acts { display:flex; gap:4px; }
+  .edit-row td { padding:6px 10px 10px 34px; }
+  .edit-row .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:6px; }
+
+  /* add panel */
+  .field { margin-bottom:10px; }
+  .field label { display:block; font-size:12px; color:var(--mut); margin-bottom:3px; }
+  .field input, .field select { width:100%; }
+  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .results { max-height:300px; overflow:auto; border:1px solid var(--line); border-radius:6px; margin-top:4px; }
+  .res { display:flex; align-items:center; gap:8px; padding:6px 8px; border-bottom:1px solid #232a36; cursor:pointer; }
+  .res:hover { background:var(--panel2); }
+  .res img { width:18px; height:18px; image-rendering:pixelated; }
+  .res .id { color:var(--mut); font-size:11px; }
+  .res .pv { margin-left:auto; color:var(--accent); font-size:11px; }
+  .res.sel { background:#243; }
+  .pill { background:var(--panel2); border:1px solid var(--line); border-radius:12px; padding:2px 9px; font-size:12px; }
+  .modal { position:fixed; inset:0; background:rgba(0,0,0,.6); display:none; align-items:center; justify-content:center; z-index:10; }
+  .modal .box { background:var(--panel); border:1px solid var(--line); border-radius:8px; width:min(720px,92vw); max-height:84vh; display:flex; flex-direction:column; }
+  .modal textarea { flex:1; min-height:340px; background:#10131a; color:var(--txt); border:0; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:12px; font:12px/1.5 ui-monospace,Consolas,monospace; resize:none; }
+  .toast { position:fixed; bottom:18px; left:50%; transform:translateX(-50%); background:var(--green); color:#06210f; padding:8px 16px; border-radius:6px; opacity:0; transition:opacity .2s; pointer-events:none; }
+  .toast.err { background:var(--red); color:#2a0c0a; }
+  .toast.show { opacity:1; }
+</style>
+</head>
+<body>
+<header>
+  <h1>EQ Marketplace — Catalog Builder</h1>
+  <span class="db" id="db"></span>
+  <span class="sp"></span>
+  <button onclick="load()">Reload</button>
+  <button class="gold" onclick="exportSQL()">Export SQL</button>
+</header>
+
+<div class="wrap">
+  <section class="panel">
+    <div class="hd">Your shop
+      <span class="sp" style="flex:1"></span>
+      <button class="mini" onclick="expandAll(true)">Expand all</button>
+      <button class="mini" onclick="expandAll(false)">Collapse all</button>
+      <button class="mini primary" onclick="newCategory()">+ Category</button>
+    </div>
+    <div class="bd" id="tree"><div class="empty">Loading…</div></div>
+  </section>
+
+  <section class="panel">
+    <div class="hd">Add an item</div>
+    <div class="bd">
+      <div class="row2">
+        <div class="field"><label>Category (parent)</label>
+          <input id="aParent" list="dlParents" placeholder="e.g. Weapons"></div>
+        <div class="field"><label>Tab (subcat)</label>
+          <input id="aSubcat" list="dlSubcats" placeholder="e.g. Swords"></div>
+      </div>
+      <datalist id="dlParents"></datalist><datalist id="dlSubcats"></datalist>
+      <div class="field"><label>Find item (name or id)</label>
+        <input id="aSearch" placeholder="type to search the items table…" autocomplete="off"></div>
+      <div class="results" id="results" style="display:none"></div>
+      <div id="picked" class="field" style="display:none; margin-top:8px">
+        <label>Selected item</label>
+        <div class="pill" id="pickedLbl"></div>
+      </div>
+      <div class="row2" style="margin-top:8px">
+        <div class="field"><label>Price (0 = free)</label><input id="aPrice" type="number" value="0" min="0"></div>
+        <div class="field"><label>Currency</label><select id="aCur"></select></div>
+      </div>
+      <button class="primary" style="width:100%" onclick="addItem()">Add to catalog</button>
+      <p class="muted" style="font-size:12px;margin:10px 0 0">
+        Tip: type a brand-new Category name to create a top-level category — it appears in game
+        with no client changes. The 3D preview is automatic from the item's own data.</p>
+    </div>
+  </section>
+</div>
+
+<div class="modal" id="modal"><div class="box">
+  <div class="hd" style="padding:10px 14px;color:var(--gold);font-weight:600;display:flex">
+    Export SQL <span style="flex:1"></span>
+    <button class="mini" onclick="copySQL()">Copy</button>
+    <button class="mini" onclick="downloadSQL()">Download .sql</button>
+    <button class="mini" onclick="closeModal()">Close</button></div>
+  <textarea id="sqlOut" readonly></textarea>
+  <div style="padding:8px 14px" class="muted">Apply with: <code>mysql -u user -p db &lt; catalog.sql</code></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let STATE = {rows:[], currencies:[]};
+let PICKED = null;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const ico = id => `https://eqitems.13th-floor.org/itemicons/item_${id}.png`;
+function toast(m, err){ const t=$('#toast'); t.textContent=m; t.className='toast show'+(err?' err':''); setTimeout(()=>t.className='toast',1800); }
+async function api(path, opts){ const r=await fetch(path,opts); const j=await r.json().catch(()=>({})); if(!r.ok||j.error) throw new Error(j.error||('HTTP '+r.status)); return j; }
+
+async function load(){
+  try{
+    STATE = await api('/api/state');
+    $('#db').textContent = 'db: '+STATE.db;
+    const sel=$('#aCur'); if(!sel.options.length){ STATE.currencies.forEach(c=>{const o=document.createElement('option');o.value=o.textContent=c;sel.appendChild(o);}); }
+    render();
+  }catch(e){ $('#tree').innerHTML='<div class="empty err">'+esc(e.message)+'</div>'; }
+}
+
+function grouped(){
+  const g={}; for(const r of STATE.rows){ (g[r.parent]=g[r.parent]||{})[r.subcat]=(g[r.parent][r.subcat]||[]); g[r.parent][r.subcat].push(r); }
+  return g;
+}
+let DRAFTS = {};  // parent -> Set(subcats) created in UI but not yet saved (no items)
+// Which categories / subcategories are expanded. Persists across re-render so adding
+// an item (or any edit) never blows the whole tree open again. Default: collapsed,
+// so you see the full list of categories at a glance. Keys for subs are parent+" "+sub.
+const OPEN_CATS = new Set();
+const OPEN_SUBS = new Set();
+const subKey = (p,s) => p + ' ' + s;
+
+function render(){
+  const g=grouped();
+  // merge drafts so empty new categories show
+  for(const p in DRAFTS){ g[p]=g[p]||{}; for(const s of DRAFTS[p]) g[p][s]=g[p][s]||[]; }
+  // datalists
+  $('#dlParents').innerHTML=Object.keys(g).sort().map(p=>`<option value="${esc(p)}">`).join('');
+  const subs=new Set(); STATE.rows.forEach(r=>subs.add(r.subcat));
+  $('#dlSubcats').innerHTML=[...subs].sort().map(s=>`<option value="${esc(s)}">`).join('');
+
+  const parents=Object.keys(g).sort();
+  if(!parents.length){ $('#tree').innerHTML='<div class="empty">No items yet. Add one on the right, or click <b>+ Category</b>.</div>'; return; }
+  let h='';
+  for(const p of parents){
+    const subcats=Object.keys(g[p]).sort();
+    const n=subcats.reduce((a,s)=>a+g[p][s].length,0);
+    const copen=OPEN_CATS.has(p);
+    h+=`<div class="cat"><div class="chd" data-cat="${esc(p)}" onclick="togCat(this)">
+      <span class="car">${copen?'▾':'▸'}</span>
+      <span class="nm">${esc(p)}</span><span class="ct">${subcats.length} tab(s), ${n} item(s)</span>
+      <span class="acts" onclick="event.stopPropagation()">
+        <button class="mini" onclick="prefill('${esc(p)}','')">+ tab</button>
+        <button class="mini" onclick="renameCat('${esc(p)}')">rename</button>
+        <button class="mini danger" onclick="delCat('${esc(p)}')">×</button></span></div>`;
+    h+=`<div class="sbox" style="display:${copen?'':'none'}">`;
+    for(const s of subcats){
+      const sopen=OPEN_SUBS.has(subKey(p,s));
+      h+=`<div class="sub"><div class="shd" data-parent="${esc(p)}" data-sub="${esc(s)}" onclick="togSub(this)">
+        <span class="car">${sopen?'▾':'▸'}</span>
+        <span class="nm">${esc(s)}</span>
+        <span class="ct muted">${g[p][s].length}</span>
+        <span class="acts" style="margin-left:auto;display:flex;gap:4px" onclick="event.stopPropagation()">
+          <button class="mini" onclick="prefill('${esc(p)}','${esc(s)}')">+ item</button>
+          <button class="mini danger" onclick="delSub('${esc(p)}','${esc(s)}')">×</button></span></div>`;
+      h+=`<div class="ibox" style="display:${sopen?'':'none'}">`;
+      for(const it of g[p][s]){
+        h+=`<div class="item"><img src="${ico(it.icon||it.item_id)}" onerror="this.style.visibility='hidden'">
+          <span class="nm">${esc(it.name)} <span class="pv">${it.item_id}</span></span>
+          <span class="pr">${it.price>0?(it.price+' '+esc(it.currency)):'free'}</span>
+          <span class="acts">
+            <button class="mini" onclick='editItem(${JSON.stringify(it)})'>edit</button>
+            <button class="mini danger" onclick="delItem('${esc(p)}','${esc(s)}',${it.item_id})">×</button></span></div>`;
+      }
+      h+=`</div></div>`;
+    }
+    h+=`</div></div>`;
+  }
+  $('#tree').innerHTML=h;
+}
+// Toggle directly in the DOM (no re-render → no icon flicker) and remember the state.
+function togCat(el){
+  const p=el.dataset.cat, open=!OPEN_CATS.has(p);
+  if(open) OPEN_CATS.add(p); else OPEN_CATS.delete(p);
+  el.parentNode.querySelector('.sbox').style.display=open?'':'none';
+  el.querySelector('.car').textContent=open?'▾':'▸';
+}
+function togSub(el){
+  const k=subKey(el.dataset.parent, el.dataset.sub), open=!OPEN_SUBS.has(k);
+  if(open) OPEN_SUBS.add(k); else OPEN_SUBS.delete(k);
+  el.parentNode.querySelector('.ibox').style.display=open?'':'none';
+  el.querySelector('.car').textContent=open?'▾':'▸';
+}
+function expandAll(open){
+  OPEN_CATS.clear(); OPEN_SUBS.clear();
+  if(open){ const g=grouped(); for(const p in DRAFTS){ g[p]=g[p]||{}; for(const s of DRAFTS[p]) g[p][s]=g[p][s]||[]; }
+    for(const p in g){ OPEN_CATS.add(p); for(const s in g[p]) OPEN_SUBS.add(subKey(p,s)); } }
+  render();
+}
+
+function prefill(p,s){ $('#aParent').value=p; $('#aSubcat').value=s; $('#aSearch').focus(); window.scrollTo(0,0); }
+function newCategory(){ const p=prompt('New category (top-level) name:'); if(!p)return; DRAFTS[p]=DRAFTS[p]||new Set(); OPEN_CATS.add(p); render(); prefill(p,''); }
+
+// item search (debounced)
+let T=null;
+$('#aSearch').addEventListener('input', e=>{ clearTimeout(T); const v=e.target.value.trim();
+  if(!v){ $('#results').style.display='none'; return; }
+  T=setTimeout(async()=>{ try{ const {items}=await api('/api/items?q='+encodeURIComponent(v));
+    $('#results').style.display='';
+    $('#results').innerHTML=items.length?items.map(it=>`<div class="res" onclick='pick(${JSON.stringify(it)})'>
+      <img src="${ico(it.icon||it.id)}" onerror="this.style.visibility='hidden'">
+      <span>${esc(it.name)}</span><span class="id">#${it.id}</span>
+      <span class="pv">${it.preview?esc(it.preview):''}</span></div>`).join(''):'<div class="empty">no matches</div>';
+  }catch(err){ toast(err.message,1); } },220);
+});
+function pick(it){ PICKED=it; $('#picked').style.display=''; $('#results').style.display='none'; $('#aSearch').value='';
+  $('#pickedLbl').innerHTML=`${esc(it.name)} <span class="muted">#${it.id}${it.preview?' · '+esc(it.preview):' · no preview'}</span>`; }
+
+async function addItem(){
+  const p=$('#aParent').value.trim(), s=$('#aSubcat').value.trim();
+  if(!p||!s) return toast('Enter a category and a tab',1);
+  if(!PICKED) return toast('Pick an item first',1);
+  // Warn if this item is already listed somewhere. Buying resolves to the LOWEST price
+  // across all listings; listing it under more than one currency is ambiguous (a buyer
+  // could be charged a different currency than the tile shows).
+  const dups=STATE.rows.filter(r=>Number(r.item_id)===Number(PICKED.id));
+  if(dups.length){
+    const where=dups.map(r=>`  • ${r.parent} › ${r.subcat} — ${r.price>0?(r.price+' '+r.currency):'free'}`).join('\n');
+    const curs=new Set(dups.map(r=>r.currency)); curs.add($('#aCur').value);
+    const note=curs.size>1
+      ? '\n\n⚠ DIFFERENT currencies are in play. A buyer could be charged a different currency than the tile shows — list an item under ONE currency only.'
+      : '\n\nBuying charges the lowest price across all listings.';
+    if(!confirm(`"${PICKED.name}" (#${PICKED.id}) is already in your shop:\n${where}${note}\n\nList it here too?`)) return;
+  }
+  try{ await api('/api/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    parent:p, subcat:s, item_id:PICKED.id, name:PICKED.name, icon:PICKED.icon||0,
+    price:parseInt($('#aPrice').value||'0'), currency:$('#aCur').value, level:0, descr:''})});
+    if(DRAFTS[p]) DRAFTS[p].delete(s);
+    OPEN_CATS.add(p); OPEN_SUBS.add(subKey(p,s));   // reveal just the branch we added to
+    PICKED=null; $('#picked').style.display='none'; toast('Added '+p+' › '+s); await load();
+  }catch(e){ toast(e.message,1); }
+}
+
+function editItem(it){
+  // Keep this item's existing currency selectable even if it isn't in the server list
+  // (e.g. a custom name) so saving without touching it never changes the currency.
+  const list=STATE.currencies.slice(); if(it.currency && !list.includes(it.currency)) list.unshift(it.currency);
+  const cur=list.map(c=>`<option ${c===it.currency?'selected':''}>${esc(c)}</option>`).join('');
+  const box=document.createElement('div'); box.className='modal'; box.style.display='flex';
+  box.innerHTML=`<div class="box"><div class="hd" style="padding:10px 14px;color:var(--gold);font-weight:600">Edit — ${esc(it.name)}</div>
+    <div style="padding:14px" class="grid edit-grid">
+      <div class="field"><label>Display name</label><input id="eN" value="${esc(it.name)}"></div>
+      <div class="row2"><div class="field"><label>Price</label><input id="eP" type="number" value="${it.price}"></div>
+      <div class="field"><label>Currency</label><select id="eC">${cur}</select></div></div>
+      <div class="field"><label>Level (0 = none; &gt;0 feeds "My Level and Below")</label><input id="eL" type="number" value="${it.level}"></div>
+      <div class="field"><label>Tooltip / description</label><input id="eD" value="${esc(it.descr||'')}"></div></div>
+    <div style="padding:0 14px 14px;display:flex;gap:8px;justify-content:flex-end">
+      <button onclick="this.closest('.modal').remove()">Cancel</button>
+      <button class="primary" id="eSave">Save</button></div></div>`;
+  document.body.appendChild(box);
+  box.querySelector('#eSave').onclick=async()=>{ try{ await api('/api/update',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({parent:it.parent,subcat:it.subcat,item_id:it.item_id,name:box.querySelector('#eN').value,
+      price:parseInt(box.querySelector('#eP').value||'0'),currency:box.querySelector('#eC').value,
+      level:parseInt(box.querySelector('#eL').value||'0'),descr:box.querySelector('#eD').value})});
+    box.remove(); toast('Saved'); await load(); }catch(e){ toast(e.message,1); } };
+}
+
+async function del(body, msg){ try{ await api('/api/delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}); toast(msg); await load(); }catch(e){ toast(e.message,1); } }
+function delItem(p,s,id){ if(confirm('Remove this item?')) del({parent:p,subcat:s,item_id:id},'Removed'); }
+function delSub(p,s){ if(confirm(`Delete tab "${s}" and all its items?`)) del({parent:p,subcat:s},'Tab deleted'); }
+function delCat(p){ if(confirm(`Delete category "${p}" and everything under it?`)){ delete DRAFTS[p]; del({parent:p},'Category deleted'); } }
+async function renameCat(p){ const n=prompt('Rename category:',p); if(!n||n===p)return; try{ await api('/api/rename',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({parent:p,new:n})}); if(DRAFTS[p]){DRAFTS[n]=DRAFTS[p];delete DRAFTS[p];}
+    if(OPEN_CATS.delete(p)) OPEN_CATS.add(n);   // carry the open/close state to the new name
+    for(const k of [...OPEN_SUBS]) if(k.startsWith(p+' ')){ OPEN_SUBS.delete(k); OPEN_SUBS.add(n+' '+k.slice(p.length+1)); }
+    toast('Renamed'); await load(); }catch(e){ toast(e.message,1); } }
+
+let SQL='';
+async function exportSQL(){ try{ const r=await fetch('/api/export'); SQL=await r.text(); $('#sqlOut').value=SQL; $('#modal').style.display='flex'; }catch(e){ toast(e.message,1); } }
+function closeModal(){ $('#modal').style.display='none'; }
+function copySQL(){ navigator.clipboard.writeText(SQL).then(()=>toast('Copied')); }
+function downloadSQL(){ const b=new Blob([SQL],{type:'text/sql'}); const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='catalog.sql'; a.click(); }
+
+load();
+</script>
+</body>
+</html>

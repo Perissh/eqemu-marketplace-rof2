@@ -1,0 +1,12 @@
+# Normalize text line endings: the repo stores LF; Windows checks out CRLF.
+* text=auto
+
+# Shell scripts must stay LF — they run on Linux/Mac.
+*.sh text eol=lf
+
+# Windows batch files stay CRLF.
+*.bat text eol=crlf
+
+# Binaries — never apply text conversion.
+*.asi binary
+*.png binary
