@@ -21,14 +21,19 @@ DB connection (defaults shown; override with flags or env vars):
 
 Requires: Python 3.8+ and PyMySQL  (pip install pymysql)
 """
-import argparse, json, os, subprocess, sys, threading, webbrowser
+import argparse, json, os, re, subprocess, sys, threading, webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
 try:
     import pymysql
 except ImportError:
-    sys.exit("PyMySQL is required.  Install it with:  pip install pymysql")
+    print("PyMySQL not found -- installing it (pip install pymysql) ...")
+    try:
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "--quiet", "pymysql"])
+        import pymysql
+    except Exception:
+        sys.exit("PyMySQL is required and the automatic install failed.  Run:  pip install pymysql")
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CATALOG_TABLE = "boz_marketplace_catalog"
@@ -295,25 +300,39 @@ def run_remote(a):
             cfg = {}
     ssh_target = a.ssh or cfg.get("ssh") or ""
     remote_dir = a.remote_dir or cfg.get("remote_dir") or ""
+    remote_py = a.remote_python or cfg.get("remote_python") or ""
     if not ssh_target:
         ssh_target = input("  Your server SSH login (user@host): ").strip()
     if not remote_dir:
         remote_dir = input("  Path to this tool's folder ON the server: ").strip()
     if not ssh_target or not remote_dir:
         sys.exit("Need both an SSH login (user@host) and the remote tool path.")
+
+    # A drive-letter or backslash path means a Windows server -> use 'python'; otherwise a
+    # Linux/Mac server -> 'python3'. Normalize to forward slashes (Python accepts them on
+    # Windows too) so the launch command below is identical no matter the server's shell.
+    is_windows = bool(re.match(r"^[A-Za-z]:", remote_dir)) or "\\" in remote_dir
+    if not remote_py:
+        remote_py = "python" if is_windows else "python3"
+    script = remote_dir.replace("\\", "/").rstrip("/") + "/catalog_builder.py"
     try:
         with open(CONNECT_CFG, "w") as f:
-            json.dump({"ssh": ssh_target, "remote_dir": remote_dir}, f)
+            json.dump({"ssh": ssh_target, "remote_dir": remote_dir, "remote_python": remote_py}, f)
     except Exception:
         pass
 
     port = a.webport
     url = "http://localhost:%d" % port
-    # Start the tool on the server via run.sh (auto-installs PyMySQL); fall back to a
-    # bare python3 call. It binds to the server's localhost, which the -L tunnel reaches.
-    remote = ("cd '%s' && (bash run.sh --no-browser --webport %d || "
-              "python3 catalog_builder.py --no-browser --webport %d)" % (remote_dir, port, port))
-    cmd = ["ssh", "-t", "-L", "%d:localhost:%d" % (port, port), ssh_target, remote]
+    # ONE command, no shell operators (no &&, ;, cd) -> runs the same in PowerShell, cmd,
+    # and sh. The tool finds its own folder, so no 'cd' is needed; it binds to the server's
+    # localhost, which the -L tunnel reaches. (PyMySQL auto-installs on first run if absent.)
+    remote = '%s "%s" --no-browser --webport %d' % (remote_py, script, port)
+    # Allocate a PTY only when we actually have a terminal: gives clean Ctrl+C when run
+    # interactively, and still works when launched from a script or a double-click (no tty).
+    tflag = ["-t"] if (sys.stdin and sys.stdin.isatty()) else []
+    # Forward to 127.0.0.1 (not "localhost"): the tool binds IPv4 127.0.0.1, but "localhost"
+    # can resolve to IPv6 ::1 on the server, which would refuse the forwarded connection.
+    cmd = ["ssh"] + tflag + ["-L", "%d:127.0.0.1:%d" % (port, port), ssh_target, remote]
     print("Connecting to %s over SSH ...  (Ctrl+C to stop)" % ssh_target)
     print("  Browser: %s   (if it can't connect yet, give it a few seconds and refresh)" % url)
     if not a.no_browser:
@@ -341,6 +360,8 @@ def main():
                     help="Use against a REMOTE server over an SSH tunnel (run this on your PC; saved for next time).")
     ap.add_argument("--remote-dir", metavar="PATH",
                     help="Path to this tool's folder on the server (used with --ssh).")
+    ap.add_argument("--remote-python", metavar="CMD",
+                    help="Python command to run on the server (default: auto -- 'python' on Windows, 'python3' on Linux/Mac).")
     ap.add_argument("--connect", action="store_true",
                     help="Reconnect to the server saved from a previous --ssh.")
     a = ap.parse_args()

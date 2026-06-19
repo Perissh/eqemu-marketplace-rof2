@@ -28,17 +28,22 @@ pass `--user/--password/--database` to match yours.
 **Seeing the page from your PC** depends on what kind of server you have:
 - **A machine you use directly** — a home PC, or a Windows VPS over Remote Desktop: open
   the browser right there on that machine (the tool launches it for you). Nothing else to do.
-- **A headless server** — an SSH-only Linux VPS: **let the tool do it.** Run it **on your
-  PC** pointed at the server, and it opens a secure SSH tunnel, starts the tool on the
-  server, and opens your browser — no manual tunneling:
+- **A headless server** — an SSH-only box, **Linux *or* Windows**: **let the tool do it.**
+  Run it **on your PC** pointed at the server; it opens a secure SSH tunnel, starts the tool
+  on the server, and opens your browser — no manual tunneling:
   ```
-  python catalog_builder.py --ssh user@your-server --remote-dir /path/to/tool/on/server
-  # it remembers that — next time just:
+  # Linux server:
+  python catalog_builder.py --ssh user@your-server --remote-dir /home/user/.../catalog-builder
+  # Windows server (a drive-letter path is auto-detected):
+  python catalog_builder.py --ssh user@your-server --remote-dir C:/path/to/catalog-builder
+  # either way it remembers — next time just:
   python catalog_builder.py --connect
   ```
-  Or simply double-click `run.bat` / `./run.sh` on your PC with no local database — it'll
-  notice and offer to connect to your server over SSH, walking you through it once. Needs the
-  OpenSSH client (built into Windows 10/11, macOS, Linux) and SSH access to your server.
+  It auto-picks `python3` (Linux) or `python` (Windows); override with `--remote-python` if
+  your server uses a different command. Or just double-click `run.bat` / `./run.sh` on your PC
+  with no local database — it notices and offers to connect over SSH, walking you through it
+  once. Needs an OpenSSH client (built into Windows 10/11, macOS, Linux) plus SSH access and
+  Python on the server.
 
 > ⚠ **The tool has no login of its own.** The `--ssh` / `--connect` path above is the safe
 > way in: it keeps the tool bound to `localhost` on the server, reachable only through your
