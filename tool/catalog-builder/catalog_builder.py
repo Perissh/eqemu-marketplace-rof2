@@ -21,7 +21,7 @@ DB connection (defaults shown; override with flags or env vars):
 
 Requires: Python 3.8+ and PyMySQL  (pip install pymysql)
 """
-import argparse, json, os, re, subprocess, sys, threading, webbrowser
+import argparse, json, os, re, subprocess, sys, threading, time, webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -339,12 +339,20 @@ def run_remote(a):
     print("  Browser: %s   (if it can't connect yet, give it a few seconds and refresh)" % url)
     if not a.no_browser:
         threading.Timer(5.0, lambda: webbrowser.open(url)).start()
+    # Auto-reconnect: when the link drops (flaky connections reset SSH sessions), re-establish
+    # the tunnel instead of forcing a manual re-run. Ctrl+C breaks out for good. The short
+    # delay keeps it from hammering if the connection is hard-down. Your browser tab just
+    # reconnects once the tunnel is back.
     try:
-        subprocess.call(cmd)
+        while True:
+            try:
+                subprocess.call(cmd)
+            except FileNotFoundError:
+                sys.exit("Couldn't find 'ssh'. Install OpenSSH (Windows 10/11 includes it) and retry.")
+            print("Connection dropped -- reconnecting in 3s (Ctrl+C to stop) ...")
+            time.sleep(3)
     except KeyboardInterrupt:
         pass
-    except FileNotFoundError:
-        sys.exit("Couldn't find 'ssh'. Install OpenSSH (Windows 10/11 includes it) and retry.")
     print("Tunnel closed.")
 
 
