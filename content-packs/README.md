@@ -124,6 +124,25 @@ rename the pack's copy in `config.json`:
 any currency name your Marketplace knows (e.g. a custom token), per pack or via
 `--currency`.
 
+## Icons
+
+Each pack ships curated per-item icons, so cosmetics show their real inventory art
+out of the box. As a safety net, on install the tool also **fills any item still on
+the pack's placeholder icon** with the art of the stock item that casts the same
+spell on *your* server — so a regenerated or hand-trimmed pack won't show a blank
+where your database already has the right icon.
+
+It's deliberately conservative:
+
+- It only ever **fills a placeholder**. A curated per-item icon is never changed, so
+  distinct looks (every mount, every illusion) are never collapsed onto one shared
+  icon.
+- It matches only against genuine **stock** items — never another pack's items — by
+  the clicked spell, taking the most common icon for that spell.
+- An item whose spell no stock item casts simply keeps the pack's own icon.
+
+Skip the pass with `--no-icon-match` to keep exactly the icons the pack shipped.
+
 ---
 
 ## Removing the stat buffs (`--no-buffs`)
