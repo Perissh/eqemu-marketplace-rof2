@@ -143,6 +143,40 @@ It's deliberately conservative:
 
 Skip the pass with `--no-icon-match` to keep exactly the icons the pack shipped.
 
+### Items with no stock art
+
+A handful of cosmetics cast a spell that *no* stock item casts (e.g. a few rare
+illusions), so there's nothing to borrow an icon from — those keep the placeholder.
+List them with:
+
+```
+python install.py illusions --list-missing
+```
+
+It prints each such item with its spell and exits without changing anything. Give
+them a real icon in either of two ways:
+
+- **One for all** — `--placeholder-icon <id>` puts that icon on every item nothing
+  else could fill:
+
+  ```
+  python install.py illusions --placeholder-icon 645
+  ```
+
+- **Case-by-case** — a per-item map in `config.json`, keyed by item name. It takes
+  precedence over the one-for-all value, so you can set a few by hand and let the
+  rest fall back:
+
+  ```json
+  "packs": { "illusions": { "placeholder_icons": {
+      "Illusion: Ancient Rallos Zek": 1631,
+      "Illusion: Amygdalan": 660
+  } } }
+  ```
+
+After every install the tool reports how many items still have no icon, so you
+always know whether there's anything left to assign.
+
 ---
 
 ## Removing the stat buffs (`--no-buffs`)

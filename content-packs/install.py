@@ -181,6 +181,15 @@ def _clickeffect(ov):
     return v or None
 
 
+def _icon(v):
+    """An icon id as an int (pack.json may store icons as strings, while the DB
+    returns ints) -- so icon comparisons never mismatch on type. 0 when absent."""
+    try:
+        return int(v or 0)
+    except (TypeError, ValueError):
+        return 0
+
+
 def match_icons(cur, spells, lo, hi):
     """Map each clickeffect spell -> the inventory icon of the stock item that casts
     it on THIS server, so installed cosmetics show their real art instead of a
@@ -208,6 +217,20 @@ def match_icons(cur, spells, lo, hi):
     return {spell: v[1] for spell, v in best.items()}
 
 
+def placeholder_after_match(rows, base_icon, icon_map):
+    """Items that would STILL sit on the placeholder/default icon after auto-match --
+    no curated icon AND no stock art casts their spell. Returns [(name, spell)]: these
+    are exactly the items a manual --placeholder-icon / placeholder_icons map is for."""
+    out = []
+    for off, name, ov, *_ in rows:
+        shipped = _icon(ov.get("icon", base_icon))
+        hit = icon_map.get(_clickeffect(ov))
+        filled = hit and hit != shipped and (not shipped or shipped == base_icon)
+        if not filled and (not shipped or shipped == base_icon):
+            out.append((name, _clickeffect(ov)))
+    return out
+
+
 def flatten(pack, renames):
     """(offset, name, overrides, parent, subcat, sort) per item -- parent names get
     any config rename applied; subcats chunked at chunk_size so none exceeds the
@@ -233,6 +256,10 @@ def main():
                     help="also strip stat buffs from the cosmetics this pack casts")
     ap.add_argument("--no-icon-match", action="store_true",
                     help="keep the pack's shipped icons (skip stock-art auto-match)")
+    ap.add_argument("--placeholder-icon", type=int, metavar="ID",
+                    help="icon id to give EVERY item no stock art can fill")
+    ap.add_argument("--list-missing", action="store_true",
+                    help="list items with no stock art (they need a manual icon), then exit")
     ap.add_argument("--base-id", type=int)
     ap.add_argument("--auto", action="store_true", help="auto-pick a free id block")
     ap.add_argument("--price", type=int)
@@ -255,6 +282,16 @@ def main():
 
     renames = pcfg.get("categories", {})
     rows = flatten(pack, renames)
+
+    base = dict(pack["base_item"])
+    if pcfg.get("icon"):                    # per-pack default/placeholder icon
+        base["icon"] = pcfg["icon"]
+    base_icon = _icon(base.get("icon", 0))
+    # manual icons for items no stock art can fill: one value for all of them
+    # (--placeholder-icon or packs.<pack>.placeholder_icon), or a per-item
+    # {name: icon} map in config (packs.<pack>.placeholder_icons) for case-by-case.
+    ph_spread = a.placeholder_icon if a.placeholder_icon is not None else pcfg.get("placeholder_icon")
+    ph_map = pcfg.get("placeholder_icons", {}) or {}
 
     conn = db_connect(cfg); cur = conn.cursor()
     ensure_tracking(cur)
@@ -292,6 +329,21 @@ def main():
     else:
         base_id = int(base_id)
     lo, hi = base_id, base_id + len(rows) - 1
+
+    if a.list_missing:
+        imap = {} if a.no_icon_match else match_icons(
+            cur, {_clickeffect(ov) for _, _, ov, *_ in rows}, lo, hi)
+        miss = placeholder_after_match(rows, base_icon, imap)
+        if not miss:
+            print("pack '%s': every item resolves to a curated or stock-matched icon." % a.pack)
+            return
+        print("pack '%s': %d item(s) have no stock art to borrow. Give them an icon with:"
+              % (a.pack, len(miss)))
+        print("  --placeholder-icon <id>                       one icon for all of them, or")
+        print("  packs.%s.placeholder_icons in config.json   {\"<name>\": <id>}  case-by-case" % a.pack)
+        for name, spell in miss:
+            print("   %-46s spell %s" % (name, spell))
+        return
 
     # ---- guard 1: never merge into a category name someone else already uses -
     seen = set()
@@ -332,11 +384,6 @@ def main():
         cur.execute("DELETE FROM boz_marketplace_catalog WHERE item_id IN (%s)" % idl)
         cur.execute("DELETE FROM mkt_pack_items WHERE pack=%s", (a.pack,))
 
-    base = dict(pack["base_item"])
-    if pcfg.get("icon"):                    # per-pack default icon for items lacking one
-        base["icon"] = pcfg["icon"]
-    base_icon = base.get("icon", 0)
-
     # icon auto-match (default on): for any cosmetic still on the pack's placeholder/
     # default icon, borrow the inventory art of the stock item that casts the same
     # spell on THIS server. A curated per-item icon is ALWAYS kept -- overriding it
@@ -344,17 +391,23 @@ def main():
     # --no-icon-match skips the pass entirely.
     icon_map = {} if a.no_icon_match else match_icons(
         cur, {_clickeffect(ov) for _, _, ov, *_ in rows}, lo, hi)
-    matched = 0
+    matched = manual = leftover = 0
 
     for off, name, ov, parent, subcat, sort in rows:
         iid = base_id + off
         row = dict(base); row.update(ov); row["id"] = iid; row["Name"] = name
-        shipped = row.get("icon", base_icon)        # curated per-item icon, or the default/placeholder
+        shipped = _icon(row.get("icon", base_icon)) # curated per-item icon, or the default/placeholder
         hit = icon_map.get(_clickeffect(ov))
         if hit and hit != shipped and (not shipped or shipped == base_icon):
             icon = hit; matched += 1                 # fill a placeholder with real stock art
         else:
             icon = shipped                           # keep the curated icon as-is
+        if not icon or icon == base_icon:            # still a placeholder -> manual choice
+            pick = ph_map.get(name, ph_spread)       # per-item map wins; else the one-for-all value
+            if pick:
+                icon = int(pick); manual += 1
+        if not icon or icon == base_icon:
+            leftover += 1                            # no curated/stock/manual icon -> stays placeholder
         row["icon"] = icon                           # keep item + catalog tile in sync
         cols = list(row.keys())
         cur.execute(
@@ -373,6 +426,11 @@ def main():
           % (a.pack, len(rows), lo, hi, cats, price, currency))
     if matched:
         print("icons: filled %d placeholder icon(s) from stock art (curated icons kept)." % matched)
+    if manual:
+        print("icons: set %d no-stock-art item(s) to your chosen icon." % manual)
+    if leftover:
+        print("icons: %d item(s) still have no icon -- run '%s --list-missing' to see them, then "
+              "set --placeholder-icon or packs.%s.placeholder_icons." % (leftover, a.pack, a.pack))
     if a.no_buffs:
         spell_ids = sorted({s for s in (_clickeffect(ov) for _, _, ov, *_ in rows) if s})
         n = strip_buffs(cur, a.pack, spell_ids)
