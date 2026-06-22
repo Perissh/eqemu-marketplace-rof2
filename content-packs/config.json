@@ -1,0 +1,17 @@
+{
+  "_about": "Settings for install.py. Run it on the box with DB access. Any value here can be overridden with a CLI flag (--base-id, --price, --currency, --host/--user/--password/--database).",
+
+  "db": { "host": "127.0.0.1", "port": 3306, "user": "eqemu", "password": "eqemu", "database": "peq" },
+
+  "_base_id": "Per pack: a NUMBER creates items at exactly that id range (manual). Or \"auto\" lets the installer find a free block for you. EITHER WAY it never overwrites items it didn't create -- if a manual range is occupied it ABORTS and tells you, it does not clobber.",
+  "_icon": "Optional per pack: a default inventory icon id for items that lack one. The illusion/familiar/pet-illusion packs already reuse each spell's real item icon where the game has one; set this to cover the rest. 0 = leave the pack default.",
+  "_categories": "Optional per pack: rename a category if its name clashes with one you already have, e.g. \"categories\": { \"Illusions\": \"Player Illusions\" }. The installer ABORTS rather than merge into a category that isn't ours.",
+
+  "packs": {
+    "illusions":     { "base_id": 4002000, "price": 10, "currency": "Platinum", "icon": 0, "categories": {} },
+    "familiars":     { "base_id": 4002300, "price": 10, "currency": "Platinum", "icon": 0, "categories": {} },
+    "pet-illusions": { "base_id": 4002500, "price": 10, "currency": "Platinum", "icon": 0, "categories": {} },
+    "mounts":    { "base_id": 4003000, "price": 50, "currency": "Platinum", "categories": {} },
+    "ornaments": { "base_id": 4004000, "price": 10, "currency": "Platinum", "categories": {} }
+  }
+}

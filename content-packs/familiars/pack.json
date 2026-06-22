@@ -1,0 +1,682 @@
+{
+ "pack": "familiars",
+ "default_base_id": 4002300,
+ "default_price": 10,
+ "default_currency": "Platinum",
+ "base_item": {
+  "minstatus": "0",
+  "aagi": "0",
+  "ac": "0",
+  "accuracy": "0",
+  "acha": "0",
+  "adex": "0",
+  "aint": "0",
+  "artifactflag": "0",
+  "asta": "0",
+  "astr": "0",
+  "attack": "0",
+  "augrestrict": "0",
+  "augslot1type": "19",
+  "augslot1visible": "0",
+  "augslot2type": "0",
+  "augslot2visible": "1",
+  "augslot3type": "0",
+  "augslot3visible": "1",
+  "augslot4type": "0",
+  "augslot4visible": "1",
+  "augslot5type": "0",
+  "augslot5visible": "1",
+  "augslot6type": "0",
+  "augslot6visible": "1",
+  "augtype": "0",
+  "avoidance": "0",
+  "awis": "0",
+  "bagsize": "0",
+  "bagslots": "0",
+  "bagtype": "0",
+  "bagwr": "0",
+  "banedmgamt": "0",
+  "banedmgraceamt": "0",
+  "banedmgbody": "0",
+  "banedmgrace": "0",
+  "bardtype": "0",
+  "bardvalue": "0",
+  "book": "0",
+  "casttime": "5000",
+  "casttime_": "0",
+  "charmfile": "",
+  "charmfileid": "0",
+  "classes": "65535",
+  "color": "4278190080",
+  "combateffects": "0",
+  "extradmgskill": "0",
+  "extradmgamt": "0",
+  "price": "0",
+  "cr": "0",
+  "damage": "0",
+  "damageshield": "0",
+  "deity": "0",
+  "delay": "0",
+  "augdistiller": "0",
+  "dotshielding": "0",
+  "dr": "0",
+  "clicktype": "5",
+  "clicklevel2": "0",
+  "elemdmgtype": "0",
+  "elemdmgamt": "0",
+  "endur": "0",
+  "factionamt1": "0",
+  "factionamt2": "0",
+  "factionamt3": "0",
+  "factionamt4": "0",
+  "factionmod1": "0",
+  "factionmod2": "0",
+  "factionmod3": "0",
+  "factionmod4": "0",
+  "filename": "",
+  "focuseffect": "-1",
+  "fr": "0",
+  "fvnodrop": "1",
+  "haste": "0",
+  "clicklevel": "0",
+  "hp": "0",
+  "regen": "0",
+  "icon": "2035",
+  "idfile": "IT63",
+  "itemclass": "0",
+  "itemtype": "11",
+  "ldonprice": "0",
+  "ldontheme": "0",
+  "ldonsold": "0",
+  "light": "0",
+  "lore": "Summons a tumbleweed to follow in your wake",
+  "loregroup": "0",
+  "magic": "1",
+  "mana": "0",
+  "manaregen": "0",
+  "enduranceregen": "0",
+  "material": "0",
+  "herosforgemodel": "0",
+  "maxcharges": "-1",
+  "mr": "0",
+  "nodrop": "1",
+  "norent": "1",
+  "pendingloreflag": "0",
+  "pr": "0",
+  "procrate": "0",
+  "races": "65535",
+  "range": "0",
+  "reclevel": "0",
+  "recskill": "0",
+  "reqlevel": "0",
+  "sellrate": "1",
+  "shielding": "0",
+  "size": "1",
+  "skillmodtype": "-1",
+  "skillmodvalue": "0",
+  "slots": "4194304",
+  "spellshield": "0",
+  "strikethrough": "0",
+  "stunresist": "0",
+  "summonedflag": "0",
+  "tradeskills": "0",
+  "favor": "0",
+  "weight": "10",
+  "UNK012": "0",
+  "UNK013": "1",
+  "benefitflag": "0",
+  "UNK054": "0",
+  "UNK059": "0",
+  "booktype": "0",
+  "recastdelay": "10",
+  "recasttype": "-1",
+  "guildfavor": "0",
+  "UNK123": "0",
+  "UNK124": "0",
+  "attuneable": "0",
+  "nopet": "0",
+  "updated": "2015-12-05 09:40:08",
+  "comment": "",
+  "UNK127": "0",
+  "pointtype": "0",
+  "potionbelt": "0",
+  "potionbeltslots": "0",
+  "stacksize": "1",
+  "notransfer": "0",
+  "stackable": "0",
+  "UNK134": "",
+  "UNK137": "0",
+  "proceffect": "-1",
+  "proctype": "0",
+  "proclevel2": "0",
+  "proclevel": "0",
+  "UNK142": "0",
+  "worneffect": "-1",
+  "worntype": "0",
+  "wornlevel2": "0",
+  "wornlevel": "0",
+  "UNK147": "0",
+  "focustype": "0",
+  "focuslevel2": "0",
+  "focuslevel": "0",
+  "UNK152": "0",
+  "scrolleffect": "-1",
+  "scrolltype": "0",
+  "scrolllevel2": "0",
+  "scrolllevel": "0",
+  "UNK157": "0",
+  "serialized": null,
+  "verified": "2016-01-24 14:26:57",
+  "serialization": null,
+  "source": "13THFLOOR",
+  "UNK033": "0",
+  "lorefile": "",
+  "UNK014": "1",
+  "svcorruption": "0",
+  "skillmodmax": "0",
+  "UNK060": "0",
+  "augslot1unk2": "0",
+  "augslot2unk2": "0",
+  "augslot3unk2": "0",
+  "augslot4unk2": "0",
+  "augslot5unk2": "0",
+  "augslot6unk2": "0",
+  "UNK120": "-1",
+  "UNK121": "0",
+  "questitemflag": "0",
+  "UNK132": "00000000000000000000",
+  "clickunk5": "0",
+  "clickunk6": "",
+  "clickunk7": "0",
+  "procunk1": "0",
+  "procunk2": "0",
+  "procunk3": "0",
+  "procunk4": "0",
+  "procunk6": "",
+  "procunk7": "-1",
+  "wornunk1": "0",
+  "wornunk2": "0",
+  "wornunk3": "0",
+  "wornunk4": "0",
+  "wornunk5": "0",
+  "wornunk6": "",
+  "wornunk7": "-1",
+  "focusunk1": "0",
+  "focusunk2": "0",
+  "focusunk3": "0",
+  "focusunk4": "0",
+  "focusunk5": "0",
+  "focusunk6": "",
+  "focusunk7": "-1",
+  "scrollunk1": "0",
+  "scrollunk2": "0",
+  "scrollunk3": "0",
+  "scrollunk4": "0",
+  "scrollunk5": "0",
+  "scrollunk6": "",
+  "scrollunk7": "-1",
+  "UNK193": "0",
+  "purity": "0",
+  "evoitem": "0",
+  "evoid": "0",
+  "evolvinglevel": "0",
+  "evomax": "0",
+  "clickname": "",
+  "procname": "",
+  "wornname": "",
+  "focusname": "",
+  "scrollname": "",
+  "dsmitigation": "0",
+  "heroic_str": "0",
+  "heroic_int": "0",
+  "heroic_wis": "0",
+  "heroic_agi": "0",
+  "heroic_dex": "0",
+  "heroic_sta": "0",
+  "heroic_cha": "0",
+  "heroic_pr": "0",
+  "heroic_dr": "0",
+  "heroic_fr": "0",
+  "heroic_cr": "0",
+  "heroic_mr": "0",
+  "heroic_svcorrup": "0",
+  "healamt": "0",
+  "spelldmg": "0",
+  "clairvoyance": "0",
+  "backstabdmg": "0",
+  "created": "2015-11-30 08:30:47",
+  "elitematerial": "0",
+  "ldonsellbackrate": "70",
+  "scriptfileid": "0",
+  "expendablearrow": "0",
+  "powersourcecapacity": "0",
+  "bardeffect": "-1",
+  "bardeffecttype": "0",
+  "bardlevel2": "0",
+  "bardlevel": "0",
+  "bardunk1": "0",
+  "bardunk2": "0",
+  "bardunk3": "0",
+  "bardunk4": "0",
+  "bardunk5": "0",
+  "bardname": "",
+  "bardunk7": "-1",
+  "UNK214": "0",
+  "subtype": "0",
+  "UNK220": "0",
+  "UNK221": "0",
+  "heirloom": "1",
+  "UNK223": "0",
+  "UNK224": "12",
+  "UNK225": "0",
+  "UNK226": "0",
+  "UNK227": "0",
+  "UNK228": "1065353216",
+  "UNK229": "1065353216",
+  "UNK230": "0",
+  "UNK231": "-1",
+  "UNK232": "0",
+  "UNK233": "-256",
+  "UNK234": "255",
+  "placeable": "1",
+  "UNK236": "1152000",
+  "UNK237": "-2147483648",
+  "UNK238": "63",
+  "UNK239": "0",
+  "UNK240": "0",
+  "UNK241": "0",
+  "epicitem": "0"
+ },
+ "categories": [
+  {
+   "parent": "Familiars",
+   "chunk_size": 60,
+   "items": [
+    {
+     "name": "Familiar: Anklebiter Doll",
+     "overrides": {
+      "clickeffect": 16882
+     }
+    },
+    {
+     "name": "Familiar: Aqua Goblin",
+     "overrides": {
+      "clickeffect": 21366,
+      "icon": 2673
+     }
+    },
+    {
+     "name": "Familiar: Azure Dragon",
+     "overrides": {
+      "clickeffect": 12891,
+      "icon": 2604
+     }
+    },
+    {
+     "name": "Familiar: Battle Ogre",
+     "overrides": {
+      "clickeffect": 13396,
+      "icon": 720
+     }
+    },
+    {
+     "name": "Familiar: Bitter Brownie",
+     "overrides": {
+      "clickeffect": 12881,
+      "icon": 1085
+     }
+    },
+    {
+     "name": "Familiar: Bixie",
+     "overrides": {
+      "clickeffect": 12939,
+      "icon": 1908
+     }
+    },
+    {
+     "name": "Familiar: Blunt Force",
+     "overrides": {
+      "clickeffect": 21947,
+      "icon": 1792
+     }
+    },
+    {
+     "name": "Familiar: Brewworks",
+     "overrides": {
+      "clickeffect": 16898,
+      "icon": 2350
+     }
+    },
+    {
+     "name": "Familiar: Child's Play Anklebiter Doll",
+     "overrides": {
+      "clickeffect": 20119,
+      "icon": 3257
+     }
+    },
+    {
+     "name": "Familiar: Clicking Beetle",
+     "overrides": {
+      "clickeffect": 21931,
+      "icon": 927
+     }
+    },
+    {
+     "name": "Familiar: Coral Serpent",
+     "overrides": {
+      "clickeffect": 13091,
+      "icon": 969
+     }
+    },
+    {
+     "name": "Familiar: Crimson Spiroc",
+     "overrides": {
+      "clickeffect": 20154,
+      "icon": 1146
+     }
+    },
+    {
+     "name": "Familiar: Dragon Sage",
+     "overrides": {
+      "clickeffect": 12935,
+      "icon": 1478
+     }
+    },
+    {
+     "name": "Familiar: Dragon Seer",
+     "overrides": {
+      "clickeffect": 13381,
+      "icon": 2604
+     }
+    },
+    {
+     "name": "Familiar: Emerald Dragon",
+     "overrides": {
+      "clickeffect": 20153,
+      "icon": 1478
+     }
+    },
+    {
+     "name": "Familiar: Emerald Sokokar",
+     "overrides": {
+      "clickeffect": 13392,
+      "icon": 1533
+     }
+    },
+    {
+     "name": "Familiar: Fairy",
+     "overrides": {
+      "clickeffect": 21640,
+      "icon": 909
+     }
+    },
+    {
+     "name": "Familiar: Fiery Pyrilen",
+     "overrides": {
+      "clickeffect": 13384,
+      "icon": 1536
+     }
+    },
+    {
+     "name": "Familiar: Froglok Too Old",
+     "overrides": {
+      "clickeffect": 21509,
+      "icon": 1068
+     }
+    },
+    {
+     "name": "Familiar: Froglok of Old",
+     "overrides": {
+      "clickeffect": 21508,
+      "icon": 1068
+     }
+    },
+    {
+     "name": "Familiar: Frost Dragon",
+     "overrides": {
+      "clickeffect": 12913,
+      "icon": 2603
+     }
+    },
+    {
+     "name": "Familiar: Girplan",
+     "overrides": {
+      "clickeffect": 12937,
+      "icon": 1496
+     }
+    },
+    {
+     "name": "Familiar: Gnoll Pup",
+     "overrides": {
+      "clickeffect": 24073,
+      "icon": 643
+     }
+    },
+    {
+     "name": "Familiar: Gorged Eye",
+     "overrides": {
+      "clickeffect": 12886,
+      "icon": 885
+     }
+    },
+    {
+     "name": "Familiar: Growling Bazu",
+     "overrides": {
+      "clickeffect": 12936,
+      "icon": 1474
+     }
+    },
+    {
+     "name": "Familiar: Hooded Scrykin",
+     "overrides": {
+      "clickeffect": 12885,
+      "icon": 1649
+     }
+    },
+    {
+     "name": "Familiar: Icicle",
+     "overrides": {
+      "clickeffect": 21058,
+      "icon": 533
+     }
+    },
+    {
+     "name": "Familiar: Icy Gelidran",
+     "overrides": {
+      "clickeffect": 13383,
+      "icon": 1535
+     }
+    },
+    {
+     "name": "Familiar: Kobold King",
+     "overrides": {
+      "clickeffect": 12883,
+      "icon": 1646
+     }
+    },
+    {
+     "name": "Familiar: Leopard Cub",
+     "overrides": {
+      "clickeffect": 21622,
+      "icon": 564
+     }
+    },
+    {
+     "name": "Familiar: Lesser Air Elemental",
+     "overrides": {
+      "clickeffect": 20168,
+      "icon": 2102
+     }
+    },
+    {
+     "name": "Familiar: Lesser Earth Elemental",
+     "overrides": {
+      "clickeffect": 20169,
+      "icon": 2103
+     }
+    },
+    {
+     "name": "Familiar: Lightning Warrior",
+     "overrides": {
+      "clickeffect": 12938,
+      "icon": 1482
+     }
+    },
+    {
+     "name": "Familiar: Lion Cub",
+     "overrides": {
+      "clickeffect": 21956,
+      "icon": 1623
+     }
+    },
+    {
+     "name": "Familiar: Miniature Clockwork Toy",
+     "overrides": {
+      "clickeffect": 21627,
+      "icon": 2407
+     }
+    },
+    {
+     "name": "Familiar: Minotaur",
+     "overrides": {
+      "clickeffect": 13382,
+      "icon": 1496
+     }
+    },
+    {
+     "name": "Familiar: Moonfang's Cub",
+     "overrides": {
+      "clickeffect": 21623,
+      "icon": 564
+     }
+    },
+    {
+     "name": "Familiar: Phased Scrykin",
+     "overrides": {
+      "clickeffect": 12884,
+      "icon": 1648
+     }
+    },
+    {
+     "name": "Familiar: Protective Mimic",
+     "overrides": {
+      "clickeffect": 23021,
+      "icon": 3295
+     }
+    },
+    {
+     "name": "Familiar: Razors Edge",
+     "overrides": {
+      "clickeffect": 21946,
+      "icon": 1727
+     }
+    },
+    {
+     "name": "Familiar: Red Bat",
+     "overrides": {
+      "clickeffect": 20744,
+      "icon": 791
+     }
+    },
+    {
+     "name": "Familiar: Runebound Goblin",
+     "overrides": {
+      "clickeffect": 20152,
+      "icon": 2673
+     }
+    },
+    {
+     "name": "Familiar: Runic Gargoyle",
+     "overrides": {
+      "clickeffect": 12911,
+      "icon": 2601
+     }
+    },
+    {
+     "name": "Familiar: Screeching Harpy",
+     "overrides": {
+      "clickeffect": 12910,
+      "icon": 2600
+     }
+    },
+    {
+     "name": "Familiar: Sea Serpent",
+     "overrides": {
+      "clickeffect": 24189,
+      "icon": 1317
+     }
+    },
+    {
+     "name": "Familiar: Shadow Wolf",
+     "overrides": {
+      "clickeffect": 21380,
+      "icon": 2907
+     }
+    },
+    {
+     "name": "Familiar: Snappy",
+     "overrides": {
+      "clickeffect": 21057,
+      "icon": 1227
+     }
+    },
+    {
+     "name": "Familiar: Spawn of Nurga",
+     "overrides": {
+      "clickeffect": 13092,
+      "icon": 1633
+     }
+    },
+    {
+     "name": "Familiar: Spectral Banshee",
+     "overrides": {
+      "clickeffect": 21377,
+      "icon": 1648
+     }
+    },
+    {
+     "name": "Familiar: Spiked Worg",
+     "overrides": {
+      "clickeffect": 20155,
+      "icon": 1890
+     }
+    },
+    {
+     "name": "Familiar: Stone Gargoyle",
+     "overrides": {
+      "clickeffect": 12912,
+      "icon": 2602
+     }
+    },
+    {
+     "name": "Familiar: Tiger Cub",
+     "overrides": {
+      "clickeffect": 21955,
+      "icon": 2308
+     }
+    },
+    {
+     "name": "Familiar: Vanishing Point",
+     "overrides": {
+      "clickeffect": 21945,
+      "icon": 3179
+     }
+    },
+    {
+     "name": "Familiar: Wailing Banshee",
+     "overrides": {
+      "clickeffect": 21376,
+      "icon": 1649
+     }
+    },
+    {
+     "name": "Familiar: Zombie Hostess",
+     "overrides": {
+      "clickeffect": 13380,
+      "icon": 1386
+     }
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,1620 @@
+{
+ "pack": "illusions",
+ "default_base_id": 4002000,
+ "default_price": 10,
+ "default_currency": "Platinum",
+ "base_item": {
+  "minstatus": "0",
+  "aagi": "0",
+  "ac": "0",
+  "accuracy": "0",
+  "acha": "0",
+  "adex": "0",
+  "aint": "0",
+  "artifactflag": "0",
+  "asta": "0",
+  "astr": "0",
+  "attack": "0",
+  "augrestrict": "0",
+  "augslot1type": "19",
+  "augslot1visible": "0",
+  "augslot2type": "0",
+  "augslot2visible": "1",
+  "augslot3type": "0",
+  "augslot3visible": "1",
+  "augslot4type": "0",
+  "augslot4visible": "1",
+  "augslot5type": "0",
+  "augslot5visible": "1",
+  "augslot6type": "0",
+  "augslot6visible": "1",
+  "augtype": "0",
+  "avoidance": "0",
+  "awis": "0",
+  "bagsize": "0",
+  "bagslots": "0",
+  "bagtype": "0",
+  "bagwr": "0",
+  "banedmgamt": "0",
+  "banedmgraceamt": "0",
+  "banedmgbody": "0",
+  "banedmgrace": "0",
+  "bardtype": "0",
+  "bardvalue": "0",
+  "book": "0",
+  "casttime": "5000",
+  "casttime_": "0",
+  "charmfile": "",
+  "charmfileid": "0",
+  "classes": "65535",
+  "color": "4278190080",
+  "combateffects": "0",
+  "extradmgskill": "0",
+  "extradmgamt": "0",
+  "price": "0",
+  "cr": "0",
+  "damage": "0",
+  "damageshield": "0",
+  "deity": "0",
+  "delay": "0",
+  "augdistiller": "0",
+  "dotshielding": "0",
+  "dr": "0",
+  "clicktype": "5",
+  "clicklevel2": "0",
+  "elemdmgtype": "0",
+  "elemdmgamt": "0",
+  "endur": "0",
+  "factionamt1": "0",
+  "factionamt2": "0",
+  "factionamt3": "0",
+  "factionamt4": "0",
+  "factionmod1": "0",
+  "factionmod2": "0",
+  "factionmod3": "0",
+  "factionmod4": "0",
+  "filename": "",
+  "focuseffect": "-1",
+  "fr": "0",
+  "fvnodrop": "1",
+  "haste": "0",
+  "clicklevel": "0",
+  "hp": "0",
+  "regen": "0",
+  "icon": "2035",
+  "idfile": "IT63",
+  "itemclass": "0",
+  "itemtype": "11",
+  "ldonprice": "0",
+  "ldontheme": "0",
+  "ldonsold": "0",
+  "light": "0",
+  "lore": "Summons a tumbleweed to follow in your wake",
+  "loregroup": "0",
+  "magic": "1",
+  "mana": "0",
+  "manaregen": "0",
+  "enduranceregen": "0",
+  "material": "0",
+  "herosforgemodel": "0",
+  "maxcharges": "-1",
+  "mr": "0",
+  "nodrop": "1",
+  "norent": "1",
+  "pendingloreflag": "0",
+  "pr": "0",
+  "procrate": "0",
+  "races": "65535",
+  "range": "0",
+  "reclevel": "0",
+  "recskill": "0",
+  "reqlevel": "0",
+  "sellrate": "1",
+  "shielding": "0",
+  "size": "1",
+  "skillmodtype": "-1",
+  "skillmodvalue": "0",
+  "slots": "4194304",
+  "spellshield": "0",
+  "strikethrough": "0",
+  "stunresist": "0",
+  "summonedflag": "0",
+  "tradeskills": "0",
+  "favor": "0",
+  "weight": "10",
+  "UNK012": "0",
+  "UNK013": "1",
+  "benefitflag": "0",
+  "UNK054": "0",
+  "UNK059": "0",
+  "booktype": "0",
+  "recastdelay": "10",
+  "recasttype": "-1",
+  "guildfavor": "0",
+  "UNK123": "0",
+  "UNK124": "0",
+  "attuneable": "0",
+  "nopet": "0",
+  "updated": "2015-12-05 09:40:08",
+  "comment": "",
+  "UNK127": "0",
+  "pointtype": "0",
+  "potionbelt": "0",
+  "potionbeltslots": "0",
+  "stacksize": "1",
+  "notransfer": "0",
+  "stackable": "0",
+  "UNK134": "",
+  "UNK137": "0",
+  "proceffect": "-1",
+  "proctype": "0",
+  "proclevel2": "0",
+  "proclevel": "0",
+  "UNK142": "0",
+  "worneffect": "-1",
+  "worntype": "0",
+  "wornlevel2": "0",
+  "wornlevel": "0",
+  "UNK147": "0",
+  "focustype": "0",
+  "focuslevel2": "0",
+  "focuslevel": "0",
+  "UNK152": "0",
+  "scrolleffect": "-1",
+  "scrolltype": "0",
+  "scrolllevel2": "0",
+  "scrolllevel": "0",
+  "UNK157": "0",
+  "serialized": null,
+  "verified": "2016-01-24 14:26:57",
+  "serialization": null,
+  "source": "13THFLOOR",
+  "UNK033": "0",
+  "lorefile": "",
+  "UNK014": "1",
+  "svcorruption": "0",
+  "skillmodmax": "0",
+  "UNK060": "0",
+  "augslot1unk2": "0",
+  "augslot2unk2": "0",
+  "augslot3unk2": "0",
+  "augslot4unk2": "0",
+  "augslot5unk2": "0",
+  "augslot6unk2": "0",
+  "UNK120": "-1",
+  "UNK121": "0",
+  "questitemflag": "0",
+  "UNK132": "00000000000000000000",
+  "clickunk5": "0",
+  "clickunk6": "",
+  "clickunk7": "0",
+  "procunk1": "0",
+  "procunk2": "0",
+  "procunk3": "0",
+  "procunk4": "0",
+  "procunk6": "",
+  "procunk7": "-1",
+  "wornunk1": "0",
+  "wornunk2": "0",
+  "wornunk3": "0",
+  "wornunk4": "0",
+  "wornunk5": "0",
+  "wornunk6": "",
+  "wornunk7": "-1",
+  "focusunk1": "0",
+  "focusunk2": "0",
+  "focusunk3": "0",
+  "focusunk4": "0",
+  "focusunk5": "0",
+  "focusunk6": "",
+  "focusunk7": "-1",
+  "scrollunk1": "0",
+  "scrollunk2": "0",
+  "scrollunk3": "0",
+  "scrollunk4": "0",
+  "scrollunk5": "0",
+  "scrollunk6": "",
+  "scrollunk7": "-1",
+  "UNK193": "0",
+  "purity": "0",
+  "evoitem": "0",
+  "evoid": "0",
+  "evolvinglevel": "0",
+  "evomax": "0",
+  "clickname": "",
+  "procname": "",
+  "wornname": "",
+  "focusname": "",
+  "scrollname": "",
+  "dsmitigation": "0",
+  "heroic_str": "0",
+  "heroic_int": "0",
+  "heroic_wis": "0",
+  "heroic_agi": "0",
+  "heroic_dex": "0",
+  "heroic_sta": "0",
+  "heroic_cha": "0",
+  "heroic_pr": "0",
+  "heroic_dr": "0",
+  "heroic_fr": "0",
+  "heroic_cr": "0",
+  "heroic_mr": "0",
+  "heroic_svcorrup": "0",
+  "healamt": "0",
+  "spelldmg": "0",
+  "clairvoyance": "0",
+  "backstabdmg": "0",
+  "created": "2015-11-30 08:30:47",
+  "elitematerial": "0",
+  "ldonsellbackrate": "70",
+  "scriptfileid": "0",
+  "expendablearrow": "0",
+  "powersourcecapacity": "0",
+  "bardeffect": "-1",
+  "bardeffecttype": "0",
+  "bardlevel2": "0",
+  "bardlevel": "0",
+  "bardunk1": "0",
+  "bardunk2": "0",
+  "bardunk3": "0",
+  "bardunk4": "0",
+  "bardunk5": "0",
+  "bardname": "",
+  "bardunk7": "-1",
+  "UNK214": "0",
+  "subtype": "0",
+  "UNK220": "0",
+  "UNK221": "0",
+  "heirloom": "1",
+  "UNK223": "0",
+  "UNK224": "12",
+  "UNK225": "0",
+  "UNK226": "0",
+  "UNK227": "0",
+  "UNK228": "1065353216",
+  "UNK229": "1065353216",
+  "UNK230": "0",
+  "UNK231": "-1",
+  "UNK232": "0",
+  "UNK233": "-256",
+  "UNK234": "255",
+  "placeable": "1",
+  "UNK236": "1152000",
+  "UNK237": "-2147483648",
+  "UNK238": "63",
+  "UNK239": "0",
+  "UNK240": "0",
+  "UNK241": "0",
+  "epicitem": "0"
+ },
+ "categories": [
+  {
+   "parent": "Illusions",
+   "chunk_size": 60,
+   "items": [
+    {
+     "name": "Illusion: Air Elemental",
+     "overrides": {
+      "clickeffect": 597,
+      "icon": 972
+     }
+    },
+    {
+     "name": "Illusion: Amygdalan",
+     "overrides": {
+      "clickeffect": 26966
+     }
+    },
+    {
+     "name": "Illusion: Ancient Bristlebane",
+     "overrides": {
+      "clickeffect": 39527
+     }
+    },
+    {
+     "name": "Illusion: Ancient Cazic-Thule",
+     "overrides": {
+      "clickeffect": 39532
+     }
+    },
+    {
+     "name": "Illusion: Ancient Erollisi Marr",
+     "overrides": {
+      "clickeffect": 39529
+     }
+    },
+    {
+     "name": "Illusion: Ancient God",
+     "overrides": {
+      "clickeffect": 39526,
+      "icon": 7475
+     }
+    },
+    {
+     "name": "Illusion: Ancient Iksar",
+     "overrides": {
+      "clickeffect": 13394,
+      "icon": 528
+     }
+    },
+    {
+     "name": "Illusion: Ancient Innoruuk",
+     "overrides": {
+      "clickeffect": 39533
+     }
+    },
+    {
+     "name": "Illusion: Ancient Rallos Zek",
+     "overrides": {
+      "clickeffect": 39528
+     }
+    },
+    {
+     "name": "Illusion: Ancient Solusek Ro",
+     "overrides": {
+      "clickeffect": 39530
+     }
+    },
+    {
+     "name": "Illusion: Ancient Tribunal",
+     "overrides": {
+      "clickeffect": 39534
+     }
+    },
+    {
+     "name": "Illusion: Ancient Tunare",
+     "overrides": {
+      "clickeffect": 39531
+     }
+    },
+    {
+     "name": "Illusion: Aqua Goblin",
+     "overrides": {
+      "clickeffect": 37504,
+      "icon": 2633
+     }
+    },
+    {
+     "name": "Illusion: Arcane Scrykin",
+     "overrides": {
+      "clickeffect": 12929,
+      "icon": 1650
+     }
+    },
+    {
+     "name": "Illusion: Armored Shiliskin",
+     "overrides": {
+      "clickeffect": 37793,
+      "icon": 4120
+     }
+    },
+    {
+     "name": "Illusion: Aviak Rook",
+     "overrides": {
+      "clickeffect": 13372,
+      "icon": 1653
+     }
+    },
+    {
+     "name": "Illusion: Azure Sporali",
+     "overrides": {
+      "clickeffect": 13124
+     }
+    },
+    {
+     "name": "Illusion: Banshee",
+     "overrides": {
+      "clickeffect": 12927,
+      "icon": 1494
+     }
+    },
+    {
+     "name": "Illusion: Barbarian",
+     "overrides": {
+      "clickeffect": 586,
+      "icon": 600
+     }
+    },
+    {
+     "name": "Illusion: Barraki",
+     "overrides": {
+      "clickeffect": 27732
+     }
+    },
+    {
+     "name": "Illusion: Basilisk",
+     "overrides": {
+      "clickeffect": 4018,
+      "icon": 2052
+     }
+    },
+    {
+     "name": "Illusion: Bat",
+     "overrides": {
+      "clickeffect": 32824,
+      "icon": 791
+     }
+    },
+    {
+     "name": "Illusion: Bear",
+     "overrides": {
+      "clickeffect": 4019,
+      "icon": 2053
+     }
+    },
+    {
+     "name": "Illusion: Bixie Drone",
+     "overrides": {
+      "clickeffect": 12903,
+      "icon": 2593
+     }
+    },
+    {
+     "name": "Illusion: Bixie Queen",
+     "overrides": {
+      "clickeffect": 12902,
+      "icon": 2592
+     }
+    },
+    {
+     "name": "Illusion: Bixie Soldier",
+     "overrides": {
+      "clickeffect": 33888,
+      "icon": 1377
+     }
+    },
+    {
+     "name": "Illusion: Blackburrow Gnoll Reaver",
+     "overrides": {
+      "clickeffect": 39622
+     }
+    },
+    {
+     "name": "Illusion: Blood Red Bellikos",
+     "overrides": {
+      "clickeffect": 33968,
+      "icon": 3514
+     }
+    },
+    {
+     "name": "Illusion: Blood Runed Gargoyle",
+     "overrides": {
+      "clickeffect": 21624,
+      "icon": 2673
+     }
+    },
+    {
+     "name": "Illusion: Bloodmoon Orc",
+     "overrides": {
+      "clickeffect": 15884
+     }
+    },
+    {
+     "name": "Illusion: Brownie",
+     "overrides": {
+      "clickeffect": 12904,
+      "icon": 2594
+     }
+    },
+    {
+     "name": "Illusion: Brownie Noble",
+     "overrides": {
+      "clickeffect": 12905,
+      "icon": 2595
+     }
+    },
+    {
+     "name": "Illusion: Burning Dead Necromancer",
+     "overrides": {
+      "clickeffect": 37615,
+      "icon": 1126
+     }
+    },
+    {
+     "name": "Illusion: Burning Nekhon",
+     "overrides": {
+      "clickeffect": 12337,
+      "icon": 1680
+     }
+    },
+    {
+     "name": "Illusion: Capricious Drakkin",
+     "overrides": {
+      "clickeffect": 37977,
+      "icon": 840
+     }
+    },
+    {
+     "name": "Illusion: Centaur",
+     "overrides": {
+      "clickeffect": 20159,
+      "icon": 1584
+     }
+    },
+    {
+     "name": "Illusion: Centaur Warrior",
+     "overrides": {
+      "clickeffect": 37782,
+      "icon": 1322
+     }
+    },
+    {
+     "name": "Illusion: Chetari",
+     "overrides": {
+      "clickeffect": 33571,
+      "icon": 1651
+     }
+    },
+    {
+     "name": "Illusion: Cockatrice",
+     "overrides": {
+      "clickeffect": 12492,
+      "icon": 2165
+     }
+    },
+    {
+     "name": "Illusion: Coldain",
+     "overrides": {
+      "clickeffect": 36159
+     }
+    },
+    {
+     "name": "Illusion: Corrupt Akhevan",
+     "overrides": {
+      "clickeffect": 38682,
+      "icon": 2580
+     }
+    },
+    {
+     "name": "Illusion: Corrupted Shiliskin",
+     "overrides": {
+      "clickeffect": 12930,
+      "icon": 1652
+     }
+    },
+    {
+     "name": "Illusion: Crystal Golem",
+     "overrides": {
+      "clickeffect": 12928,
+      "icon": 506
+     }
+    },
+    {
+     "name": "Illusion: Crystalline Sessiloid",
+     "overrides": {
+      "clickeffect": 27747
+     }
+    },
+    {
+     "name": "Illusion: Crystalline Trichordont",
+     "overrides": {
+      "clickeffect": 27745
+     }
+    },
+    {
+     "name": "Illusion: Daft Trickster",
+     "overrides": {
+      "clickeffect": 32201
+     }
+    },
+    {
+     "name": "Illusion: Dark Bellikos",
+     "overrides": {
+      "clickeffect": 32895,
+      "icon": 3257
+     }
+    },
+    {
+     "name": "Illusion: Dark Elf",
+     "overrides": {
+      "clickeffect": 590,
+      "icon": 771
+     }
+    },
+    {
+     "name": "Illusion: Dark Elf Pirate",
+     "overrides": {
+      "clickeffect": 39286
+     }
+    },
+    {
+     "name": "Illusion: Dark Elf Pirate Female",
+     "overrides": {
+      "clickeffect": 38377,
+      "icon": 825
+     }
+    },
+    {
+     "name": "Illusion: Dark Elf Pirate Male",
+     "overrides": {
+      "clickeffect": 38378,
+      "icon": 826
+     }
+    },
+    {
+     "name": "Illusion: Dark Minotaur",
+     "overrides": {
+      "clickeffect": 38395,
+      "icon": 1167
+     }
+    },
+    {
+     "name": "Illusion: Darkfell Gnoll Reaver",
+     "overrides": {
+      "clickeffect": 39621
+     }
+    },
+    {
+     "name": "Illusion: Deadraiser",
+     "overrides": {
+      "clickeffect": 30103
+     }
+    },
+    {
+     "name": "Illusion: Direwind Gnoll Reaver",
+     "overrides": {
+      "clickeffect": 39624
+     }
+    },
+    {
+     "name": "Illusion: Drachnid",
+     "overrides": {
+      "clickeffect": 27743
+     }
+    },
+    {
+     "name": "Illusion: Dragon of the Air",
+     "overrides": {
+      "clickeffect": 16940
+     }
+    },
+    {
+     "name": "Illusion: Drakkin of Atathus",
+     "overrides": {
+      "clickeffect": 11531
+     }
+    },
+    {
+     "name": "Illusion: Drakkin of Draton`ra",
+     "overrides": {
+      "clickeffect": 10605
+     }
+    },
+    {
+     "name": "Illusion: Drakkin of Keikolin",
+     "overrides": {
+      "clickeffect": 37976
+     }
+    },
+    {
+     "name": "Illusion: Drakkin of Mysaphar",
+     "overrides": {
+      "clickeffect": 37975
+     }
+    },
+    {
+     "name": "Illusion: Drakkin of Osh`vir",
+     "overrides": {
+      "clickeffect": 10606,
+      "icon": 1158
+     }
+    },
+    {
+     "name": "Illusion: Drakkin of Venesh",
+     "overrides": {
+      "clickeffect": 10607,
+      "icon": 1159
+     }
+    },
+    {
+     "name": "Illusion: Dry Bone",
+     "overrides": {
+      "clickeffect": 596,
+      "icon": 1069
+     }
+    },
+    {
+     "name": "Illusion: Dwarf",
+     "overrides": {
+      "clickeffect": 591,
+      "icon": 528
+     }
+    },
+    {
+     "name": "Illusion: Eagle Aviak",
+     "overrides": {
+      "clickeffect": 21625,
+      "icon": 1653
+     }
+    },
+    {
+     "name": "Illusion: Earth Elemental",
+     "overrides": {
+      "clickeffect": 584,
+      "icon": 539
+     }
+    },
+    {
+     "name": "Illusion: Earth Elemental ",
+     "overrides": {
+      "clickeffect": 4020,
+      "icon": 2054
+     }
+    },
+    {
+     "name": "Illusion: Embattled Minotaur",
+     "overrides": {
+      "clickeffect": 20142,
+      "icon": 2672
+     }
+    },
+    {
+     "name": "Illusion: Erudite",
+     "overrides": {
+      "clickeffect": 587,
+      "icon": 693
+     }
+    },
+    {
+     "name": "Illusion: Erudite Pirate",
+     "overrides": {
+      "clickeffect": 39292
+     }
+    },
+    {
+     "name": "Illusion: Erudite Pirate Female",
+     "overrides": {
+      "clickeffect": 38385,
+      "icon": 827
+     }
+    },
+    {
+     "name": "Illusion: Erudite Pirate Male",
+     "overrides": {
+      "clickeffect": 38386,
+      "icon": 828
+     }
+    },
+    {
+     "name": "Illusion: Evil Eye",
+     "overrides": {
+      "clickeffect": 9127,
+      "icon": 1129
+     }
+    },
+    {
+     "name": "Illusion: Fairy",
+     "overrides": {
+      "clickeffect": 4021,
+      "icon": 2055
+     }
+    },
+    {
+     "name": "Illusion: Fallen Knight",
+     "overrides": {
+      "clickeffect": 38376,
+      "icon": 1609
+     }
+    },
+    {
+     "name": "Illusion: Fallen Soldier",
+     "overrides": {
+      "clickeffect": 38389,
+      "icon": 1611
+     }
+    },
+    {
+     "name": "Illusion: Feir'Dal",
+     "overrides": {
+      "clickeffect": 1194,
+      "icon": 848
+     }
+    },
+    {
+     "name": "Illusion: Female",
+     "overrides": {
+      "clickeffect": 1731
+     }
+    },
+    {
+     "name": "Illusion: Fire Bone",
+     "overrides": {
+      "clickeffect": 11580,
+      "icon": 1622
+     }
+    },
+    {
+     "name": "Illusion: Fire Elemental",
+     "overrides": {
+      "clickeffect": 598,
+      "icon": 677
+     }
+    },
+    {
+     "name": "Illusion: Flame Telmira",
+     "overrides": {
+      "clickeffect": 12330,
+      "icon": 3405
+     }
+    },
+    {
+     "name": "Illusion: Floating Skull",
+     "overrides": {
+      "clickeffect": 13393,
+      "icon": 808
+     }
+    },
+    {
+     "name": "Illusion: Flood Telmira",
+     "overrides": {
+      "clickeffect": 37787,
+      "icon": 4058
+     }
+    },
+    {
+     "name": "Illusion: Flying Dragon",
+     "overrides": {
+      "clickeffect": 21626,
+      "icon": 1906
+     }
+    },
+    {
+     "name": "Illusion: Forest Fairy",
+     "overrides": {
+      "clickeffect": 33775,
+      "icon": 1460
+     }
+    },
+    {
+     "name": "Illusion: Froglok",
+     "overrides": {
+      "clickeffect": 3063,
+      "icon": 700
+     }
+    },
+    {
+     "name": "Illusion: Froglok Ghost",
+     "overrides": {
+      "clickeffect": 38801,
+      "icon": 2059
+     }
+    },
+    {
+     "name": "Illusion: Frost Bone",
+     "overrides": {
+      "clickeffect": 4418,
+      "icon": 528
+     }
+    },
+    {
+     "name": "Illusion: Frost Goblin",
+     "overrides": {
+      "clickeffect": 13374,
+      "icon": 2633
+     }
+    },
+    {
+     "name": "Illusion: Gelatinous Cube",
+     "overrides": {
+      "clickeffect": 33999,
+      "icon": 1544
+     }
+    },
+    {
+     "name": "Illusion: Gelidran",
+     "overrides": {
+      "clickeffect": 12926,
+      "icon": 1608
+     }
+    },
+    {
+     "name": "Illusion: Gender",
+     "overrides": {
+      "clickeffect": 1730
+     }
+    },
+    {
+     "name": "Illusion: Gingerbread Man",
+     "overrides": {
+      "clickeffect": 11949,
+      "icon": 3539
+     }
+    },
+    {
+     "name": "Illusion: Girplan",
+     "overrides": {
+      "clickeffect": 32401,
+      "icon": 3679
+     }
+    },
+    {
+     "name": "Illusion: Gnoll",
+     "overrides": {
+      "clickeffect": 21962,
+      "icon": 662
+     }
+    },
+    {
+     "name": "Illusion: Gnoll Reaver",
+     "overrides": {
+      "clickeffect": 39620,
+      "icon": 6267
+     }
+    },
+    {
+     "name": "Illusion: Gnome",
+     "overrides": {
+      "clickeffect": 595,
+      "icon": 695
+     }
+    },
+    {
+     "name": "Illusion: Gnomish Pirate",
+     "overrides": {
+      "clickeffect": 27728
+     }
+    },
+    {
+     "name": "Illusion: Goblin",
+     "overrides": {
+      "clickeffect": 4022,
+      "icon": 2056
+     }
+    },
+    {
+     "name": "Illusion: Goblin King",
+     "overrides": {
+      "clickeffect": 12892,
+      "icon": 1063
+     }
+    },
+    {
+     "name": "Illusion: Goblin of Dagnor's",
+     "overrides": {
+      "clickeffect": 14657
+     }
+    },
+    {
+     "name": "Illusion: Goblin of Solusek",
+     "overrides": {
+      "clickeffect": 14656
+     }
+    },
+    {
+     "name": "Illusion: Goblin of the Valley",
+     "overrides": {
+      "clickeffect": 14658
+     }
+    },
+    {
+     "name": "Illusion: Guktan",
+     "overrides": {
+      "clickeffect": 4017,
+      "icon": 595
+     }
+    },
+    {
+     "name": "Illusion: Gunthak Pirate",
+     "overrides": {
+      "clickeffect": 39280,
+      "icon": 595
+     }
+    },
+    {
+     "name": "Illusion: Hadal",
+     "overrides": {
+      "clickeffect": 31498,
+      "icon": 2056
+     }
+    },
+    {
+     "name": "Illusion: Hadal Templar",
+     "overrides": {
+      "clickeffect": 32042,
+      "icon": 4136
+     }
+    },
+    {
+     "name": "Illusion: Half-Elf",
+     "overrides": {
+      "clickeffect": 583,
+      "icon": 585
+     }
+    },
+    {
+     "name": "Illusion: Halfling",
+     "overrides": {
+      "clickeffect": 594,
+      "icon": 692
+     }
+    },
+    {
+     "name": "Illusion: Hideous Harpy",
+     "overrides": {
+      "clickeffect": 12874,
+      "icon": 2617
+     }
+    },
+    {
+     "name": "Illusion: High Elf",
+     "overrides": {
+      "clickeffect": 589,
+      "icon": 509
+     }
+    },
+    {
+     "name": "Illusion: Hooded Scrykin",
+     "overrides": {
+      "clickeffect": 12890,
+      "icon": 1650
+     }
+    },
+    {
+     "name": "Illusion: Human",
+     "overrides": {
+      "clickeffect": 582,
+      "icon": 512
+     }
+    },
+    {
+     "name": "Illusion: Human Pirate",
+     "overrides": {
+      "clickeffect": 39290,
+      "icon": 2056
+     }
+    },
+    {
+     "name": "Illusion: Human Pirate Female",
+     "overrides": {
+      "clickeffect": 38384,
+      "icon": 711
+     }
+    },
+    {
+     "name": "Illusion: Human Pirate Male",
+     "overrides": {
+      "clickeffect": 38383,
+      "icon": 710
+     }
+    },
+    {
+     "name": "Illusion: Ice Golem",
+     "overrides": {
+      "clickeffect": 12988,
+      "icon": 506
+     }
+    },
+    {
+     "name": "Illusion: Iksar",
+     "overrides": {
+      "clickeffect": 243,
+      "icon": 664
+     }
+    },
+    {
+     "name": "Illusion: Iksar Skeleton",
+     "overrides": {
+      "clickeffect": 13395,
+      "icon": 1633
+     }
+    },
+    {
+     "name": "Illusion: Imp",
+     "overrides": {
+      "clickeffect": 2565,
+      "icon": 791
+     }
+    },
+    {
+     "name": "Illusion: Izon",
+     "overrides": {
+      "clickeffect": 32784,
+      "icon": 1797
+     }
+    },
+    {
+     "name": "Illusion: Junkyard Gnomework",
+     "overrides": {
+      "clickeffect": 38390,
+      "icon": 2283
+     }
+    },
+    {
+     "name": "Illusion: Kedge",
+     "overrides": {
+      "clickeffect": 12402,
+      "icon": 1343
+     }
+    },
+    {
+     "name": "Illusion: Kobold",
+     "overrides": {
+      "clickeffect": 4024,
+      "icon": 2056
+     }
+    },
+    {
+     "name": "Illusion: Kobold King",
+     "overrides": {
+      "clickeffect": 12901,
+      "icon": 2591
+     }
+    },
+    {
+     "name": "Illusion: Kobold Serf",
+     "overrides": {
+      "clickeffect": 12873,
+      "icon": 2591
+     }
+    },
+    {
+     "name": "Illusion: Kunark Goblin",
+     "overrides": {
+      "clickeffect": 20158,
+      "icon": 2673
+     }
+    },
+    {
+     "name": "Illusion: Lightning Warrior",
+     "overrides": {
+      "clickeffect": 32813,
+      "icon": 4053
+     }
+    },
+    {
+     "name": "Illusion: Lord Soptyvr",
+     "overrides": {
+      "clickeffect": 36224
+     }
+    },
+    {
+     "name": "Illusion: Male",
+     "overrides": {
+      "clickeffect": 1732
+     }
+    },
+    {
+     "name": "Illusion: Mastruq",
+     "overrides": {
+      "clickeffect": 37659,
+      "icon": 528
+     }
+    },
+    {
+     "name": "Illusion: Minotaur",
+     "overrides": {
+      "clickeffect": 20157,
+      "icon": 2672
+     }
+    },
+    {
+     "name": "Illusion: Mucktail Gnoll Reaver",
+     "overrides": {
+      "clickeffect": 39623
+     }
+    },
+    {
+     "name": "Illusion: Nekhon",
+     "overrides": {
+      "clickeffect": 38800,
+      "icon": 2053
+     }
+    },
+    {
+     "name": "Illusion: Nihil Yunjo",
+     "overrides": {
+      "clickeffect": 38805,
+      "icon": 1460
+     }
+    },
+    {
+     "name": "Illusion: Ogre",
+     "overrides": {
+      "clickeffect": 593,
+      "icon": 621
+     }
+    },
+    {
+     "name": "Illusion: Ogre Pirate",
+     "overrides": {
+      "clickeffect": 23022,
+      "icon": 920
+     }
+    },
+    {
+     "name": "Illusion: Orc",
+     "overrides": {
+      "clickeffect": 8036,
+      "icon": 535
+     }
+    },
+    {
+     "name": "Illusion: Ornate Bellikos",
+     "overrides": {
+      "clickeffect": 38797,
+      "icon": 2052
+     }
+    },
+    {
+     "name": "Illusion: Phantom Froglok",
+     "overrides": {
+      "clickeffect": 33576,
+      "icon": 1275
+     }
+    },
+    {
+     "name": "Illusion: Plaguebringer",
+     "overrides": {
+      "clickeffect": 27996,
+      "icon": 2154
+     }
+    },
+    {
+     "name": "Illusion: Polar Bear",
+     "overrides": {
+      "clickeffect": 33887,
+      "icon": 1878
+     }
+    },
+    {
+     "name": "Illusion: Polka Dot Bunny",
+     "overrides": {
+      "clickeffect": 17864
+     }
+    },
+    {
+     "name": "Illusion: Primal Kerran",
+     "overrides": {
+      "clickeffect": 20144,
+      "icon": 2594
+     }
+    },
+    {
+     "name": "Illusion: Putrid Swinetor",
+     "overrides": {
+      "clickeffect": 31499,
+      "icon": 770
+     }
+    },
+    {
+     "name": "Illusion: Pyrilen",
+     "overrides": {
+      "clickeffect": 12925,
+      "icon": 1653
+     }
+    },
+    {
+     "name": "Illusion: Rallosian Goblin",
+     "overrides": {
+      "clickeffect": 32787,
+      "icon": 1663
+     }
+    },
+    {
+     "name": "Illusion: Raptor Predator",
+     "overrides": {
+      "clickeffect": 27727
+     }
+    },
+    {
+     "name": "Illusion: Recluse Spider",
+     "overrides": {
+      "clickeffect": 23015,
+      "icon": 1240
+     }
+    },
+    {
+     "name": "Illusion: Regal Vampire Female",
+     "overrides": {
+      "clickeffect": 33086,
+      "icon": 1663
+     }
+    },
+    {
+     "name": "Illusion: Regal Vampire Male",
+     "overrides": {
+      "clickeffect": 33085,
+      "icon": 1680
+     }
+    },
+    {
+     "name": "Illusion: Revenant of Thelasa",
+     "overrides": {
+      "clickeffect": 30176
+     }
+    },
+    {
+     "name": "Illusion: Ripclaw Raptor",
+     "overrides": {
+      "clickeffect": 30023
+     }
+    },
+    {
+     "name": "Illusion: Robed Scrykin",
+     "overrides": {
+      "clickeffect": 33969,
+      "icon": 2274
+     }
+    },
+    {
+     "name": "Illusion: Royal Guardian",
+     "overrides": {
+      "clickeffect": 27033
+     }
+    },
+    {
+     "name": "Illusion: Runic Tattoo Nihil Female",
+     "overrides": {
+      "clickeffect": 33574,
+      "icon": 1459
+     }
+    },
+    {
+     "name": "Illusion: Runic Tattoo Nihil Male",
+     "overrides": {
+      "clickeffect": 33575,
+      "icon": 1460
+     }
+    },
+    {
+     "name": "Illusion: Samhain",
+     "overrides": {
+      "clickeffect": 32874
+     }
+    },
+    {
+     "name": "Illusion: Sarnak",
+     "overrides": {
+      "clickeffect": 32879,
+      "icon": 1651
+     }
+    },
+    {
+     "name": "Illusion: Satyr",
+     "overrides": {
+      "clickeffect": 22999,
+      "icon": 1907
+     }
+    },
+    {
+     "name": "Illusion: Satyr Piper",
+     "overrides": {
+      "clickeffect": 33774,
+      "icon": 1317
+     }
+    },
+    {
+     "name": "Illusion: Scaled Wolf",
+     "overrides": {
+      "clickeffect": 3586,
+      "icon": 956
+     }
+    },
+    {
+     "name": "Illusion: Scarecrow",
+     "overrides": {
+      "clickeffect": 6107,
+      "icon": 826
+     }
+    },
+    {
+     "name": "Illusion: Shadow Nekhon",
+     "overrides": {
+      "clickeffect": 37794,
+      "icon": 3140
+     }
+    },
+    {
+     "name": "Illusion: Silver Gnomework",
+     "overrides": {
+      "clickeffect": 37869,
+      "icon": 2286
+     }
+    },
+    {
+     "name": "Illusion: Simple Bellikos",
+     "overrides": {
+      "clickeffect": 12322
+     }
+    },
+    {
+     "name": "Illusion: Simple Gnoll",
+     "overrides": {
+      "clickeffect": 12335,
+      "icon": 3568
+     }
+    },
+    {
+     "name": "Illusion: Simple Gnomework",
+     "overrides": {
+      "clickeffect": 12329,
+      "icon": 2284
+     }
+    },
+    {
+     "name": "Illusion: Siren Enticer",
+     "overrides": {
+      "clickeffect": 13373,
+      "icon": 2595
+     }
+    },
+    {
+     "name": "Illusion: Siren Sorceress",
+     "overrides": {
+      "clickeffect": 37781,
+      "icon": 1282
+     }
+    },
+    {
+     "name": "Illusion: Skeleton",
+     "overrides": {
+      "clickeffect": 581,
+      "icon": 505
+     }
+    },
+    {
+     "name": "Illusion: Snow Kobold",
+     "overrides": {
+      "clickeffect": 21628,
+      "icon": 2593
+     }
+    },
+    {
+     "name": "Illusion: Somnium Satyr",
+     "overrides": {
+      "clickeffect": 27741
+     }
+    },
+    {
+     "name": "Illusion: Spectre",
+     "overrides": {
+      "clickeffect": 11572,
+      "icon": 770
+     }
+    },
+    {
+     "name": "Illusion: Spirit Wolf",
+     "overrides": {
+      "clickeffect": 600,
+      "icon": 507
+     }
+    },
+    {
+     "name": "Illusion: Spirited Satyr",
+     "overrides": {
+      "clickeffect": 20143,
+      "icon": 2595
+     }
+    },
+    {
+     "name": "Illusion: Steam Suit",
+     "overrides": {
+      "clickeffect": 12401,
+      "icon": 1673
+     }
+    },
+    {
+     "name": "Illusion: Stone Gargoyle",
+     "overrides": {
+      "clickeffect": 12875,
+      "icon": 2618
+     }
+    },
+    {
+     "name": "Illusion: Swinetor Necromancer",
+     "overrides": {
+      "clickeffect": 37788,
+      "icon": 1412
+     }
+    },
+    {
+     "name": "Illusion: Tree",
+     "overrides": {
+      "clickeffect": 601,
+      "icon": 583
+     }
+    },
+    {
+     "name": "Illusion: Tree Fairy",
+     "overrides": {
+      "clickeffect": 15883
+     }
+    },
+    {
+     "name": "Illusion: Troll",
+     "overrides": {
+      "clickeffect": 592,
+      "icon": 602
+     }
+    },
+    {
+     "name": "Illusion: Troll Pirate",
+     "overrides": {
+      "clickeffect": 39282
+     }
+    },
+    {
+     "name": "Illusion: Twisted Gnomework",
+     "overrides": {
+      "clickeffect": 38394,
+      "icon": 2286
+     }
+    },
+    {
+     "name": "Illusion: Undead Gnoll",
+     "overrides": {
+      "clickeffect": 32875,
+      "icon": 1681
+     }
+    },
+    {
+     "name": "Illusion: Undead Shissar",
+     "overrides": {
+      "clickeffect": 38802,
+      "icon": 2055
+     }
+    },
+    {
+     "name": "Illusion: Vah Shir",
+     "overrides": {
+      "clickeffect": 2826,
+      "icon": 700
+     }
+    },
+    {
+     "name": "Illusion: Violet Sporali",
+     "overrides": {
+      "clickeffect": 11638,
+      "icon": 1645
+     }
+    },
+    {
+     "name": "Illusion: Vitrik",
+     "overrides": {
+      "clickeffect": 27746
+     }
+    },
+    {
+     "name": "Illusion: Walking Dragon",
+     "overrides": {
+      "clickeffect": 21923
+     }
+    },
+    {
+     "name": "Illusion: Warped Chetari",
+     "overrides": {
+      "clickeffect": 38811,
+      "icon": 3164
+     }
+    },
+    {
+     "name": "Illusion: Water Elemental",
+     "overrides": {
+      "clickeffect": 599,
+      "icon": 595
+     }
+    },
+    {
+     "name": "Illusion: Werewolf",
+     "overrides": {
+      "clickeffect": 585,
+      "icon": 551
+     }
+    },
+    {
+     "name": "Illusion: White Bunny",
+     "overrides": {
+      "clickeffect": 12299
+     }
+    },
+    {
+     "name": "Illusion: Wood Elf",
+     "overrides": {
+      "clickeffect": 588,
+      "icon": 911
+     }
+    }
+   ]
+  }
+ ]
+}
