@@ -6,7 +6,8 @@ Installs a content pack (cosmetics / ornaments / mounts / ...) into an EQEmu
 database: it creates the pack's items at a CONFIGURABLE id range and adds the
 catalog rows the data-driven Marketplace reads. Because the Marketplace builds
 its category tree from `boz_marketplace_catalog`, a pack's tab appears the moment
-its rows exist and disappears when they're gone -- no client changes, ever.
+its rows exist and disappears when they're gone. Client changes are opt-in: illusions
+can add their NPC-race models to GlobalLoad.txt via --client (see the flags below).
 
 Safe by design ("look before you leap"):
   * It NEVER blind-deletes an id range. Before creating items it checks the target
@@ -30,6 +31,7 @@ are kept untouched (disable the pass with --no-icon-match).
 Settings come from config.json (a `db` block + per-pack base_id/price/currency).
 Flags override: --base-id  --auto  --no-buffs  --no-icon-match  --price  --currency
                 --host --user --password --database
+Make NPC-race illusions render (opt-in): --client <EQ root>  --laa  --global-only
 """
 import os, sys, json, argparse
 
@@ -44,6 +46,133 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 def load_json(path):
     with open(path, encoding="utf-8") as f:
         return json.load(f)
+
+
+# --- make-global support (optional) ---------------------------------------------
+# Most marketplace NPC-race illusions don't render on a STOCK RoF2 client: the
+# race's model isn't loaded globally, so the client falls back to a human. The fix
+# is to add the model's archive to the client's Resources\GlobalLoad.txt -- the
+# model .eqg/_chr.s3d files are stock RoF2 assets every client already has, so only
+# GlobalLoad.txt itself changes. illusion_globalload.json (generated alongside this
+# script) carries the GlobalLoad lines to add, plus the set of race ids that NEED
+# them (make_global_races); every other illusion race renders on a stock client.
+GLOBALLOAD_JSON = os.path.join(HERE, "illusion_globalload.json")
+
+
+def load_globalload():
+    """The make-global data, or None when the file is absent (all make-global
+    features then become silent no-ops)."""
+    if not os.path.exists(GLOBALLOAD_JSON):
+        return None
+    return load_json(GLOBALLOAD_JSON)
+
+
+def _gl_archive(line):
+    """The archive field (4th comma-separated value, lower-cased) of a GlobalLoad
+    line, or '' if the line is malformed."""
+    parts = line.split(",")
+    return parts[3].strip().lower() if len(parts) >= 4 else ""
+
+
+def clickeffect_races(cur, spell_ids):
+    """Map clickeffect spell id -> illusion race id for the pack's clickies, in ONE
+    query. Only SPA 58 (Illusion) on slot 1 carries a race, so non-illusion clickies
+    simply don't appear in the result."""
+    spell_ids = sorted({s for s in spell_ids if s})
+    if not spell_ids:
+        return {}
+    spin = ",".join(map(str, spell_ids))
+    cur.execute("SELECT id, effect_base_value1 FROM spells_new "
+                "WHERE id IN (%s) AND effectid1=58" % spin)
+    return {sid: race for sid, race in cur.fetchall()}
+
+
+def append_globalload(client_root, lines):
+    """Idempotently append GlobalLoad lines to <client_root>\\Resources\\GlobalLoad.txt.
+    Inserts them just before the first phase-4 line (first comma-field == '4'); if
+    there's no phase-4 line, appends at end. Skips any line whose archive already
+    appears in the file (case-insensitive). Backs the original up once to
+    GlobalLoad.txt.bak before the first change, and preserves the file's newline
+    style (CRLF vs LF). Aborts if the file doesn't exist (wrong client path).
+    Returns the number of lines added."""
+    gl_path = os.path.join(client_root, "Resources", "GlobalLoad.txt")
+    if not os.path.isfile(gl_path):
+        sys.exit("ABORT: no GlobalLoad.txt at %s -- is --client the EQ client root? "
+                 "Nothing was changed." % gl_path)
+
+    with open(gl_path, "rb") as f:
+        raw = f.read()
+    newline = b"\r\n" if b"\r\n" in raw else b"\n"
+    text = raw.decode("latin-1")
+    # split on either style; keep content only, we re-join with the detected newline
+    existing = text.replace("\r\n", "\n").split("\n")
+    had_trailing = existing and existing[-1] == ""
+    if had_trailing:
+        existing = existing[:-1]
+
+    have = {_gl_archive(ln) for ln in existing if _gl_archive(ln)}
+    to_add = [ln for ln in lines if _gl_archive(ln) and _gl_archive(ln) not in have]
+    if not to_add:
+        print("GlobalLoad.txt: already current (no lines added).")
+        return 0
+
+    # find the first phase-4 line (first comma-field == '4')
+    insert_at = len(existing)
+    for i, ln in enumerate(existing):
+        first = ln.split(",", 1)[0].strip()
+        if first == "4":
+            insert_at = i
+            break
+    merged = existing[:insert_at] + to_add + existing[insert_at:]
+
+    bak = gl_path + ".bak"
+    if not os.path.exists(bak):
+        with open(bak, "wb") as f:
+            f.write(raw)
+
+    out = newline.join(s.encode("latin-1") for s in merged)
+    if had_trailing:
+        out += newline
+    with open(gl_path, "wb") as f:
+        f.write(out)
+    print("GlobalLoad.txt: added %d model line(s) (backup at GlobalLoad.txt.bak)." % len(to_add))
+    return len(to_add)
+
+
+def patch_laa(client_root):
+    """Set the PE IMAGE_FILE_LARGE_ADDRESS_AWARE (0x20) flag on
+    <client_root>\\eqgame.exe so the 32-bit client can use ~3.5 GB instead of ~2 GB
+    -- "more room for illusions". Idempotent: if the bit is already set, reports and
+    does nothing; otherwise backs the exe up once to eqgame.exe.preLAA, sets the bit,
+    and rewrites. Aborts on a missing/invalid PE."""
+    import struct
+    exe = os.path.join(client_root, "eqgame.exe")
+    if not os.path.isfile(exe):
+        sys.exit("ABORT: no eqgame.exe at %s -- is --client the EQ client root?" % exe)
+
+    with open(exe, "rb") as f:
+        data = bytearray(f.read())
+    if len(data) < 0x40 or data[0:2] != b"MZ":
+        sys.exit("ABORT: %s is not a valid PE (no MZ header)." % exe)
+    pe_off = struct.unpack_from("<I", data, 0x3C)[0]
+    if pe_off + 24 > len(data) or data[pe_off:pe_off + 4] != b"PE\0\0":
+        sys.exit("ABORT: %s has no valid PE header." % exe)
+
+    char_off = pe_off + 22                       # IMAGE_FILE_HEADER.Characteristics
+    chars = struct.unpack_from("<H", data, char_off)[0]
+    if chars & 0x20:
+        print("LAA: eqgame.exe is already LARGE_ADDRESS_AWARE (no change).")
+        return False
+
+    bak = exe + ".preLAA"
+    if not os.path.exists(bak):
+        with open(bak, "wb") as f:
+            f.write(data)
+    struct.pack_into("<H", data, char_off, chars | 0x20)
+    with open(exe, "wb") as f:
+        f.write(data)
+    print("LAA: set LARGE_ADDRESS_AWARE on eqgame.exe (backup at eqgame.exe.preLAA).")
+    return True
 
 
 def db_connect(cfg):
@@ -264,6 +393,15 @@ def main():
     ap.add_argument("--auto", action="store_true", help="auto-pick a free id block")
     ap.add_argument("--price", type=int)
     ap.add_argument("--currency")
+    ap.add_argument("--client", metavar="EQ_ROOT",
+                    help="EQ client root: after install, add the illusion model lines "
+                         "to its Resources\\GlobalLoad.txt so NPC-race illusions render")
+    ap.add_argument("--laa", action="store_true",
+                    help="with --client: set LARGE_ADDRESS_AWARE on eqgame.exe (~3.5 GB) "
+                         "to make room for the extra always-loaded illusion models")
+    ap.add_argument("--global-only", action="store_true",
+                    help="install ONLY illusions that render on a stock client "
+                         "(skip those whose race needs GlobalLoad.txt edits)")
     for k in ("host", "user", "password", "database"):
         ap.add_argument("--" + k)
     a = ap.parse_args()
@@ -279,6 +417,11 @@ def main():
     base_id  = a.base_id if a.base_id is not None else pcfg.get("base_id", pack["default_base_id"])
     price    = a.price   if a.price   is not None else pcfg.get("price", pack.get("default_price", 0))
     currency = a.currency or pcfg.get("currency") or pack.get("default_currency", "Platinum")
+    # EQ client root for the make-global pass: flag wins, else per-pack, else top-level
+    # config (mirrors how base_id falls back). Used only when --client/--laa/global is.
+    client = a.client or pcfg.get("client") or cfg.get("client")
+    if a.laa and not client:
+        sys.exit("--laa requires --client <EQ client root> (or a 'client' path in config.json).")
 
     renames = pcfg.get("categories", {})
     rows = flatten(pack, renames)
@@ -393,7 +536,25 @@ def main():
         cur, {_clickeffect(ov) for _, _, ov, *_ in rows}, lo, hi)
     matched = manual = leftover = 0
 
+    # make-global: which of this pack's clickies cast an illusion whose race needs
+    # GlobalLoad.txt edits to render on a stock client. Absent json -> empty -> every
+    # item is stock-renderable (all make-global features no-op, which is correct).
+    gldata = load_globalload()
+    global_races = set(gldata.get("make_global_races", [])) if gldata else set()
+    sp_race = clickeffect_races(
+        cur, {_clickeffect(ov) for _, _, ov, *_ in rows}) if gldata else {}
+    def needs_global(ov):
+        race = sp_race.get(_clickeffect(ov))
+        return race is not None and race in global_races
+    installed_needs_global = 0      # items installed that need their model made global
+    skipped_global = 0              # items skipped by --global-only
+
     for off, name, ov, parent, subcat, sort in rows:
+        if a.global_only and needs_global(ov):
+            skipped_global += 1
+            continue                                 # id gaps are acceptable
+        if needs_global(ov):
+            installed_needs_global += 1
         iid = base_id + off
         row = dict(base); row.update(ov); row["id"] = iid; row["Name"] = name
         shipped = _icon(row.get("icon", base_icon)) # curated per-item icon, or the default/placeholder
@@ -421,9 +582,13 @@ def main():
             "VALUES (%s,%s,%s,%s,%s,%s,%s,%s,0,'')",
             (parent, subcat, sort, iid, name, icon, price, currency))
     conn.commit()
+    n_installed = len(rows) - skipped_global
     cats = " / ".join(c["parent"] for c in pack["categories"])
     print("installed '%s': %d items at ids %d..%d  (%s)  @ %d %s."
-          % (a.pack, len(rows), lo, hi, cats, price, currency))
+          % (a.pack, n_installed, lo, hi, cats, price, currency))
+    if a.global_only:
+        print("--global-only: skipped %d illusion(s) whose race needs GlobalLoad.txt edits "
+              "(installed only the stock-renderable ones)." % skipped_global)
     if matched:
         print("icons: filled %d placeholder icon(s) from stock art (curated icons kept)." % matched)
     if manual:
@@ -436,6 +601,27 @@ def main():
         n = strip_buffs(cur, a.pack, spell_ids)
         conn.commit()
         print("--no-buffs: stripped stat buffs from %d spell(s), backed up for restore." % n)
+
+    # ---- make-global pass: get NPC-race illusions to render on a stock client ----
+    # Only GlobalLoad.txt changes (model archives are stock RoF2 assets). --uninstall
+    # deliberately leaves GlobalLoad.txt alone -- the archives are shared with the
+    # pet-illusions pack. If --client was given, append the model lines now (and patch
+    # LAA if asked). If it wasn't but installed illusions need it, nudge the user.
+    if gldata and client and installed_needs_global:
+        append_globalload(client, gldata.get("globalload_lines", []))
+        if a.laa:
+            patch_laa(client)
+    elif client and not a.global_only:
+        # --client on a pack with no NPC-race illusions (e.g. mounts/cosmetics): do
+        # NOT touch GlobalLoad.txt -- the illusion lines are irrelevant here.
+        print("note: '%s' has no NPC-race illusions needing make-global -- "
+              "GlobalLoad.txt left unchanged." % a.pack)
+    elif installed_needs_global and not a.global_only:
+        print("note: %d installed illusion(s) need their models made global to render -- "
+              "re-run with `--client <EQ path>` (add `--laa` for the memory headroom), "
+              "or use `--global-only` to install only the stock-renderable ones."
+              % installed_needs_global)
+
     print("new items need a shared_memory regen + zone restart to appear in-game.")
 
 

@@ -12,10 +12,12 @@ Install only the packs you want; skip or remove any at will.
 | **mounts** | 200 rideable mounts | Mounts | 50 |
 | **ornaments** | 391 weapon-appearance augments | Ornaments | 10 |
 
-All content is curated to actually **render on a stock RoF2 client** — illusions
-to renderable races, mounts to defined+renderable mount models, ornaments to
-weapon models the client ships. (Each pack's README explains its filter and how
-to re-validate for a different client.)
+All content is curated to actually **render** on a RoF2 client — mounts to
+defined+renderable mount models, ornaments to weapon models the client ships, and
+illusions to real RoF2 race models. Many NPC-race illusions need a one-time client
+**make-global** step to render (see *Making NPC-race illusions render* below); the
+rest render on a stock client. (Each pack's README explains its filter and how to
+re-validate for a different client.)
 
 ---
 
@@ -52,9 +54,11 @@ and confirming they survive both install and uninstall untouched).
    item definitions, so it never assumes some stock item exists, and never edits
    your items.
 
-7. **No client changes.** Packs are pure database rows. The Marketplace builds its
-   menu from the catalog, so a pack's tab appears when you install it and vanishes
-   when you remove it — no recompiling, no patching, no client files.
+7. **No client changes by default.** Packs are pure database rows. The Marketplace
+   builds its menu from the catalog, so a pack's tab appears when you install it and
+   vanishes when you remove it — no recompiling, no patching, no client files. The one
+   opt-in exception is `--client`, which adds illusion model lines to `GlobalLoad.txt`
+   so NPC-race illusions render (see *Making NPC-race illusions render*); never automatic.
 
 If anything is in the way, the installer's default is always **stop and tell you**,
 never overwrite.
@@ -227,6 +231,85 @@ spell byte-for-byte alone — your custom spells are untouched.
 
 ---
 
+## Making NPC-race illusions render (`--client`, `--laa`, `--global-only`)
+
+Most marketplace illusions use **NPC race models** (gorilla, drachnid, dragon, …).
+On a **stock RoF2 client** those models aren't loaded globally, so the client falls
+back to a plain human — you cast the illusion and nothing changes. The fix is to add
+the model's archive to the client's `Resources\GlobalLoad.txt`. The model files
+themselves (`.eqg` / `_chr.s3d`) are **stock RoF2 assets every client already has**,
+so **only `GlobalLoad.txt` is ever touched** — no new art, no patch, no other client
+file changes.
+
+The race ids that need this (and the exact `GlobalLoad.txt` lines to add) ship in
+`illusion_globalload.json` next to `install.py`. Illusions whose race is *not* in
+that list already render on a stock client.
+
+### `--client <EQ client root>` — wire up the models
+
+After a normal install, point the tool at your EQ client folder and it appends the
+missing model lines to `Resources\GlobalLoad.txt`:
+
+```
+python install.py illusions --client "C:/EverQuest-RoF2"
+```
+
+It is **safe and idempotent**:
+
+- It inserts the lines just before the file's phase-4 block (or at the end if there
+  is none), and **skips any model archive already present**, so re-running adds
+  nothing the second time (`already current`).
+- It **backs up the original once** to `GlobalLoad.txt.bak` before the first change,
+  and **preserves the file's newline style** (CRLF vs LF).
+- It **aborts with a clear message** if `Resources\GlobalLoad.txt` isn't found —
+  that means `--client` is pointing at the wrong folder, and nothing is changed.
+
+You can also set a default client path in `config.json` (`packs.<pack>.client` or a
+top-level `"client"`); the `--client` flag wins when both are present.
+
+If you install illusions **without** `--client`, the tool tells you how many of the
+just-installed illusions need their models made global, so you know to re-run with
+`--client` (or to use `--global-only`).
+
+### `--laa` — make more room for illusions
+
+Loading the full NPC-model set globally adds roughly **285 MB** of always-resident
+models. The 32-bit RoF2 client is capped at ~2 GB of address space, and that extra
+load can push it over and crash. `--laa` (used together with `--client`) sets the
+PE **`LARGE_ADDRESS_AWARE`** flag on `eqgame.exe`, raising the cap to ~3.5 GB so
+there's headroom for the always-loaded models:
+
+```
+python install.py illusions --client "C:/EverQuest-RoF2" --laa
+```
+
+It's a one-flag PE patch and is **idempotent**: if the flag is already set it reports
+`already LAA` and does nothing; otherwise it backs the exe up once to
+`eqgame.exe.preLAA` before flipping the single bit. (`--laa` requires `--client`.)
+
+### `--global-only` — install only the stock-renderable illusions
+
+If you'd rather **not** edit the client at all, `--global-only` installs only the
+illusions whose race already renders on a stock client and **skips** the ones that
+would need `GlobalLoad.txt` edits:
+
+```
+python install.py illusions --global-only
+```
+
+It reports how many illusions it skipped. (The skipped ids are simply left out; the
+range may have gaps, which is fine.)
+
+### Uninstall leaves `GlobalLoad.txt` alone
+
+`--uninstall` removes the pack's database rows but **never touches `GlobalLoad.txt`**.
+The model archives it added are **shared between the `illusions` and `pet-illusions`
+packs** (same race models), so removing one pack must not pull a model the other
+still uses. If you want to revert the client edit, restore `GlobalLoad.txt.bak`
+(and `eqgame.exe.preLAA`) by hand.
+
+---
+
 ## Requirements
 
 - Python 3 + PyMySQL (`pip install pymysql`)
@@ -245,9 +328,10 @@ each pack's README.
 
 ```
 content-packs/
-  install.py          one installer for every pack (safety logic + --no-buffs)
+  install.py          one installer for every pack (safety logic + --no-buffs + make-global)
   nobuffs_client_patch.py   mirror --no-buffs onto a client spells_us.txt (display fix)
-  config.json         db connection + per-pack base_id / price / currency / categories
+  illusion_globalload.json  GlobalLoad.txt lines + race ids for --client / --global-only
+  config.json         db connection + per-pack base_id / price / currency / categories / client
   illusions/  familiars/  pet-illusions/  mounts/  ornaments/
       pack.json       the curated item list + a self-contained base-item template
       build_pack.py   regenerates pack.json from a reference database
